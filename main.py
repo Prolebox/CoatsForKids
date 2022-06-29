@@ -157,7 +157,6 @@ class Application(Tk):
 		Item_S_CB['values'] = ('test','test2','test3')
 		Item_S_CB.place(relx=.58, rely=.58,anchor= CENTER)
 
-
 	#Create Buttons
 		Submit = Button(self.Center_Frame, text="Submit",font=("Arial",20), command='', padx=10, pady=10, width=25, bd=3)
 		Submit.place(relx=.5, rely=.9,anchor= CENTER, height=55, width=200)
@@ -191,7 +190,6 @@ class Application(Tk):
 
 		Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
 		Copyright.pack(side=BOTTOM)
-
 
 	#Create Entry Boxes
 		Select_CB = Combobox(self.Center_Frame, text='Inventory Item', state='readonly', font=("Arial",14))
@@ -333,7 +331,7 @@ class Application(Tk):
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
 		Submit = Button(self.Center_Frame, text="Submit Record", font=("Arial",15), command='', bd=3)
-		Submit.place(relx=.5,rely=.96,anchor=CENTER)
+		Submit.place(relx=.5,rely=.93,anchor=CENTER)
 
 	def View_Record(self):
 		#Create View Record Window
