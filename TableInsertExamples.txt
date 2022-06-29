@@ -1,0 +1,50 @@
+insert into Coat
+(coat_type, coat_size)
+values
+('Girls','Medium'),
+('Boys','Large'),
+('Men','Small'),
+('Women','Medium');
+
+insert into Boot
+(boot_type, boot_size)
+values
+('Girls','Medium'),
+('Boys','Large'),
+('Mens','Small'),
+('Womens','Medium'),
+('Unisex','Large');
+
+insert into Sock
+(sock_type, sock_size)
+values
+('Female','Medium'),
+('Male','Large');
+
+insert into Hat
+(hat_type)
+values
+('Female'),
+('Male');
+
+insert into Glove
+(glove_type)
+values
+('Girls'),
+('Boys'),
+('Mens'),
+('Womens');
+
+insert into Parent
+(parent_first, parent_last, parent_street, parent_city, parent_state, parent_zip, parent_phone)
+values
+('bleh','blah','1822 5th ave w','Kalispell','Montana','59901','406885800'),
+('blah','blah','1822 5th ave w','Kalispell','Montana','59901','406885800'),
+('blqh','blah','1822 5th ave w','Kalispell','Montana','59901','406885800');
+
+insert into Child
+(child_first, child_last, child_school, child_age, child_gender, child_parent_id)
+values
+('bah','bleh','Hedges','11','Male','1'),
+('bah','bleh','Hedges','11','Male','3'),
+('bah','bleh','Hedges','11','Male','3');
