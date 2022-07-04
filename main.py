@@ -12,6 +12,7 @@ class Application(Tk):
 		Tables.Create()
 
 		self.MainWindow()
+		self.config(menu=self.menubar)
 		self.mainloop()
 
 
@@ -24,10 +25,10 @@ class Application(Tk):
 		return underscore
 
 	#Configure the defaults for child windows of the menu screen
-	def ConfigureWindowDefaults(self, title=''):
+	def ConfigureWindowDefaults(self, title='', geometry='1280x720'):
 		self.Window = Toplevel(self)
 		self.Window.title(title)
-		self.Window.geometry('1280x720')
+		self.Window.geometry(geometry)
 		self.Window.resizable(0,0)
 
 		self.Top_Frame = Frame(self.Window, bg='#f1f5f4', relief='groove', bd=3)
@@ -48,6 +49,7 @@ class Application(Tk):
 		self.title('Coats for Kids - Inventory & Record Tracker')
 		self.geometry('1600x900')
 		self.Title_Image = PhotoImage(file='title.png')
+		self.Settings_Image = PhotoImage(file='gear.png')
 
 		#Define Frames and configure the grids
 		Top_Frame = Frame(self, height=175, bg='#f1f5f4', relief='groove', bd=3)
@@ -72,6 +74,15 @@ class Application(Tk):
 
 		Center_Left_Frame.grid(row=0, column=0, sticky='nsew')
 		Center_Right_Frame.grid(row=0, column=1, sticky='nsew')
+
+		#Define Menu bar
+		self.menubar = Menu(self, bg='#f1f5f4', font=("Arial",13), relief=None)
+		self.filemenu = Menu(self.menubar, tearoff=0)
+		self.filemenu.add_command(label="Inventory", command=self.Inventory)
+		self.filemenu.add_command(label="Schools", command=self.Schools)
+		self.filemenu.add_separator()
+		self.filemenu.add_command(label='Quit', command=quit)
+		self.menubar.add_cascade(label='Database', menu=self.filemenu)
 
 		#~~~ Add Widets ~~~
 		#Create Labels
@@ -110,9 +121,6 @@ class Application(Tk):
 		Add_Record = Button(Center_Right_Frame, text="View record", command=self.View_Record, font=("Arial",20), bd=3)
 		Add_Record.place(relx=.5, rely=.62,anchor= CENTER, height=55, width=200)
 
-		Exit = Button(Bottom_Frame, text="Exit", font=("Arial",15), command=quit, bd=3)
-		Exit.pack(pady=15)
-
 	def Add_Inventory(self):
 	#Create Add Inventory Window
 		self.ConfigureWindowDefaults(title='Add Inventory')
@@ -141,21 +149,21 @@ class Application(Tk):
 		Copyright.pack(side=BOTTOM)
 
 	#Create Entry Widgets
-		Item_Q_Entry = Entry(self.Center_Frame, text='Enter amount',font=("Arial",14))
-		Item_Q_Entry.place(relx=.58, rely=.74,anchor= CENTER)
+		Item_Amount_Entry = Entry(self.Center_Frame, text='Enter amount',font=("Arial",14))
+		Item_Amount_Entry.place(relx=.58, rely=.74,anchor= CENTER)
 
 	#Create Combobox Widgets
-		Item_CB = Combobox(self.Center_Frame, text='Select an item', state='readonly',font=("Arial",14))
-		Item_CB['values'] = ('test','test2','test3')
-		Item_CB.place(relx=.58, rely=.22,anchor= CENTER)
+		Item_Combobox = Combobox(self.Center_Frame, text='Select an item', state='readonly',font=("Arial",14))
+		Item_Combobox['values'] = ('test','test2','test3')
+		Item_Combobox.place(relx=.58, rely=.22,anchor= CENTER)
 
-		Item_T_CB = Combobox(self.Center_Frame, text='Select item type', state='readonly',font=("Arial",14))
-		Item_T_CB['values'] = ('test','test2','test3')
-		Item_T_CB.place(relx=.58, rely=.4,anchor= CENTER)
+		Item_Type_Combobox = Combobox(self.Center_Frame, text='Select item type', state='readonly',font=("Arial",14))
+		Item_Type_Combobox['values'] = ('test','test2','test3')
+		Item_Type_Combobox.place(relx=.58, rely=.4,anchor= CENTER)
 
-		Item_S_CB = Combobox(self.Center_Frame, text='Select item size', state='readonly',font=("Arial",14))
-		Item_S_CB['values'] = ('test','test2','test3')
-		Item_S_CB.place(relx=.58, rely=.58,anchor= CENTER)
+		Item_Size_Combobox = Combobox(self.Center_Frame, text='Select item size', state='readonly',font=("Arial",14))
+		Item_Size_Combobox['values'] = ('test','test2','test3')
+		Item_Size_Combobox.place(relx=.58, rely=.58,anchor= CENTER)
 
 	#Create Buttons
 		Submit = Button(self.Center_Frame, text="Submit",font=("Arial",20), command='', padx=10, pady=10, width=25, bd=3)
@@ -214,7 +222,6 @@ class Application(Tk):
 
 		Title_Description = Label(self.Top_Frame, text='Add Record',  font=("Arial",20), bg='#f1f5f4')
 		Title_Description.pack(fill=X)
-
 
 		Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
 		Copyright.pack(side=BOTTOM)
@@ -374,6 +381,104 @@ class Application(Tk):
 
 		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 		Exit.pack(pady=15, padx=45, side=LEFT)
+
+	def Inventory(self):
+		self.ConfigureWindowDefaults(title='Settings', geometry='800x600')
+
+		#~~~ Add Widets ~~~
+		#Add Items Labels
+		Add_Item = Label(self.Center_Frame, text='Add an Item to the database', font=("Arial",23), pady=5, bg='#f5f1f2')
+		Add_Item.place(relx=.5, rely=.16,anchor= CENTER, height=55)
+
+		Add_Item_Underscore = Label(self.Center_Frame, text=self.Underscore(35), font=("Arial",15), bg='#f5f1f2')
+		Add_Item_Underscore.place(relx=.5, rely=.22,anchor= CENTER)
+
+		Add_Item_Name = Label(self.Center_Frame, text='Name', font=("Arial",18), pady=5, bg='#f5f1f2')
+		Add_Item_Name.place(relx=.15, rely=.32,anchor= CENTER, height=55)
+
+		Add_Item_Type = Label(self.Center_Frame, text='Type', font=("Arial",18), pady=5, bg='#f5f1f2')
+		Add_Item_Type.place(relx=.35, rely=.32,anchor= CENTER, height=55)
+
+		Add_Item_Size = Label(self.Center_Frame, text='Size', font=("Arial",18), pady=5, bg='#f5f1f2')
+		Add_Item_Size.place(relx=.55, rely=.32,anchor= CENTER, height=55)
+
+		#Remove Item Labels
+		Remove_Item = Label(self.Center_Frame, text='Remove an Item from the database', font=("Arial",23), pady=5, bg='#f5f1f2')
+		Remove_Item.place(relx=.5, rely=.56,anchor= CENTER, height=55)
+
+		Remove_Item_Underscore = Label(self.Center_Frame, text=self.Underscore(35), font=("Arial",15), bg='#f5f1f2')
+		Remove_Item_Underscore.place(relx=.5, rely=.62,anchor= CENTER)
+
+		Remove_Item_Name = Label(self.Center_Frame, text='Name', font=("Arial",18), pady=5, bg='#f5f1f2')
+		Remove_Item_Name.place(relx=.15, rely=.72,anchor= CENTER, height=55)
+
+		Remove_Item_Type = Label(self.Center_Frame, text='Type', font=("Arial",18), pady=5, bg='#f5f1f2')
+		Remove_Item_Type.place(relx=.35, rely=.72,anchor= CENTER, height=55)
+
+		Remove_Item_Size = Label(self.Center_Frame, text='Size', font=("Arial",18), pady=5, bg='#f5f1f2')
+		Remove_Item_Size.place(relx=.55, rely=.72,anchor= CENTER, height=55)
+
+		Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
+		Copyright.pack(side=BOTTOM)
+
+		#Create Entry Boxes
+		Add_Item_Name_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
+		Add_Item_Name_Entry.place(relx=.15, rely=.39,anchor= CENTER)
+
+		Add_Item_Type_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
+		Add_Item_Type_Entry.place(relx=.35, rely=.39,anchor= CENTER)
+
+		Add_Item_Size_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
+		Add_Item_Size_Entry.place(relx=.55, rely=.39,anchor= CENTER)
+
+		#Create Comboboxes
+		Remove_Item_Name_Combobox = Combobox(self.Center_Frame, text='Select Item', state='readonly')
+		Remove_Item_Name_Combobox['values'] = ('test')
+		Remove_Item_Name_Combobox.place(relx=.15, rely=.79,anchor= CENTER, width='65')
+
+		Remove_Item_Type_Entry = Combobox(self.Center_Frame, text='Select Item Type', state='readonly')
+		Remove_Item_Type_Entry['values'] = ('test')
+		Remove_Item_Type_Entry.place(relx=.35, rely=.79,anchor= CENTER, width='65')
+
+		Remove_Item_Size_Entry = Combobox(self.Center_Frame, text='Select Item Size', state='readonly')
+		Remove_Item_Size_Entry['values'] = ('test')
+		Remove_Item_Size_Entry.place(relx=.55, rely=.79,anchor= CENTER, width='65')
+
+		#Create Buttons
+		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)
+		Add_Item_Submit.place(relx=.75, rely=.37,anchor= CENTER)
+
+		Remove_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)
+		Remove_Item_Submit.place(relx=.75, rely=.77,anchor= CENTER)
+
+		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
+		Exit.pack(pady=15, padx=45, side=LEFT)
+
+	def Schools(self):
+		self.ConfigureWindowDefaults(title='Schools', geometry='800x600')
+
+		#~~~ Add Widets ~~~
+		#Create Labels
+		School = Label(self.Center_Frame, text='Add a School to the database', font=("Arial",23), pady=5, bg='#f5f1f2')
+		School.place(relx=.5, rely=.56,anchor= CENTER, height=55)
+
+		School_Underscore = Label(self.Center_Frame, text=self.Underscore(35), font=("Arial",15), bg='#f5f1f2')
+		School_Underscore.place(relx=.5, rely=.62,anchor= CENTER)
+
+		School_Name = Label(self.Center_Frame, text='Name', font=("Arial",18), pady=5, bg='#f5f1f2')
+		School_Name.place(relx=.5, rely=.72,anchor= CENTER, height=55)
+
+		Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
+		Copyright.pack(side=BOTTOM)
+
+		#Create Entry Boxes
+		School_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
+		School_Entry.place(relx=.5, rely=.79,anchor= CENTER)
+
+		#Create Buttons
+		Submit_School = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)
+		Submit_School.place(relx=.75, rely=.77,anchor= CENTER)
+
 
 
 ############################################
