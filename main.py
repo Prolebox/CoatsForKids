@@ -49,7 +49,6 @@ class Application(Tk):
 		self.title('Coats for Kids - Inventory & Record Tracker')
 		self.geometry('1600x900')
 		self.Title_Image = PhotoImage(file='title.png')
-		self.Settings_Image = PhotoImage(file='gear.png')
 
 		#Define Frames and configure the grids
 		Top_Frame = Frame(self, height=175, bg='#f1f5f4', relief='groove', bd=3)
@@ -121,6 +120,7 @@ class Application(Tk):
 		Add_Record = Button(Center_Right_Frame, text="View record", command=self.View_Record, font=("Arial",20), bd=3)
 		Add_Record.place(relx=.5, rely=.62,anchor= CENTER, height=55, width=200)
 
+	#Add Inventory window
 	def Add_Inventory(self):
 	#Create Add Inventory Window
 		self.ConfigureWindowDefaults(title='Add Inventory')
@@ -172,6 +172,7 @@ class Application(Tk):
 		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
+	#View Inventory window
 	def View_Inventory(self):
 		#Create View Inventory Window
 		self.ConfigureWindowDefaults(title='View Inventory')
@@ -211,6 +212,7 @@ class Application(Tk):
 		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
+	#Add Record window
 	def Add_Record(self):
 		#Create Add Record Window
 		self.ConfigureWindowDefaults(title='Add Record')
@@ -340,6 +342,7 @@ class Application(Tk):
 		Submit = Button(self.Center_Frame, text="Submit Record", font=("Arial",15), command='', bd=3)
 		Submit.place(relx=.5,rely=.93,anchor=CENTER)
 
+	#View Record window
 	def View_Record(self):
 		#Create View Record Window
 		self.ConfigureWindowDefaults(title='View Record')
@@ -382,6 +385,7 @@ class Application(Tk):
 		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
+	#Inventory menubar
 	def Inventory(self):
 		self.ConfigureWindowDefaults(title='Settings', geometry='800x600')
 
@@ -432,17 +436,17 @@ class Application(Tk):
 		Add_Item_Size_Entry.place(relx=.55, rely=.39,anchor= CENTER)
 
 		#Create Comboboxes
-		Remove_Item_Name_Combobox = Combobox(self.Center_Frame, text='Select Item', state='readonly')
+		Remove_Item_Name_Combobox = Combobox(self.Center_Frame, text='Select Item', state='readonly', width=15)
 		Remove_Item_Name_Combobox['values'] = ('test')
-		Remove_Item_Name_Combobox.place(relx=.15, rely=.79,anchor= CENTER, width='65')
+		Remove_Item_Name_Combobox.place(relx=.15, rely=.79,anchor= CENTER)
 
-		Remove_Item_Type_Entry = Combobox(self.Center_Frame, text='Select Item Type', state='readonly')
+		Remove_Item_Type_Entry = Combobox(self.Center_Frame, text='Select Item Type', state='readonly', width=15)
 		Remove_Item_Type_Entry['values'] = ('test')
-		Remove_Item_Type_Entry.place(relx=.35, rely=.79,anchor= CENTER, width='65')
+		Remove_Item_Type_Entry.place(relx=.35, rely=.79,anchor= CENTER)
 
-		Remove_Item_Size_Entry = Combobox(self.Center_Frame, text='Select Item Size', state='readonly')
+		Remove_Item_Size_Entry = Combobox(self.Center_Frame, text='Select Item Size', state='readonly', width=15)
 		Remove_Item_Size_Entry['values'] = ('test')
-		Remove_Item_Size_Entry.place(relx=.55, rely=.79,anchor= CENTER, width='65')
+		Remove_Item_Size_Entry.place(relx=.55, rely=.79,anchor= CENTER)
 
 		#Create Buttons
 		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)
@@ -454,32 +458,52 @@ class Application(Tk):
 		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
+	#Schools menubar
 	def Schools(self):
 		self.ConfigureWindowDefaults(title='Schools', geometry='800x600')
 
 		#~~~ Add Widets ~~~
 		#Create Labels
-		School = Label(self.Center_Frame, text='Add a School to the database', font=("Arial",23), pady=5, bg='#f5f1f2')
-		School.place(relx=.5, rely=.56,anchor= CENTER, height=55)
+		Add_School = Label(self.Center_Frame, text='Add a School to the database', font=("Arial",23), pady=5, bg='#f5f1f2')
+		Add_School.place(relx=.5, rely=.16,anchor= CENTER, height=55)
 
-		School_Underscore = Label(self.Center_Frame, text=self.Underscore(35), font=("Arial",15), bg='#f5f1f2')
-		School_Underscore.place(relx=.5, rely=.62,anchor= CENTER)
+		Add_School_Underscore = Label(self.Center_Frame, text=self.Underscore(35), font=("Arial",15), bg='#f5f1f2')
+		Add_School_Underscore.place(relx=.5, rely=.22,anchor= CENTER)
 
-		School_Name = Label(self.Center_Frame, text='Name', font=("Arial",18), pady=5, bg='#f5f1f2')
-		School_Name.place(relx=.5, rely=.72,anchor= CENTER, height=55)
+		Add_School_Name = Label(self.Center_Frame, text='Name', font=("Arial",18), pady=5, bg='#f5f1f2')
+		Add_School_Name.place(relx=.5, rely=.32,anchor= CENTER, height=55)
+
+		Remove_School = Label(self.Center_Frame, text='Remove a School from the database', font=("Arial",23), pady=5, bg='#f5f1f2')
+		Remove_School.place(relx=.5, rely=.56,anchor= CENTER, height=55)
+
+		Remove_School_Underscore = Label(self.Center_Frame, text=self.Underscore(35), font=("Arial",15), bg='#f5f1f2')
+		Remove_School_Underscore.place(relx=.5, rely=.62,anchor= CENTER)
+
+		Remove_School_Name = Label(self.Center_Frame, text='Name', font=("Arial",18), pady=5, bg='#f5f1f2')
+		Remove_School_Name.place(relx=.5, rely=.72,anchor= CENTER, height=55)
+
 
 		Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
 		Copyright.pack(side=BOTTOM)
 
 		#Create Entry Boxes
-		School_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
-		School_Entry.place(relx=.5, rely=.79,anchor= CENTER)
+		Add_School_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
+		Add_School_Entry.place(relx=.5, rely=.39,anchor= CENTER)
+
+		#Create Combobox
+		Remove_School_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
+		Remove_School_Combobox['values'] = ('test')
+		Remove_School_Combobox.place(relx=.5, rely=.79,anchor= CENTER)
 
 		#Create Buttons
-		Submit_School = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)
-		Submit_School.place(relx=.75, rely=.77,anchor= CENTER)
+		Add_School_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)
+		Add_School_Submit.place(relx=.75, rely=.37,anchor= CENTER)
 
+		Remove_School_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)
+		Remove_School_Submit.place(relx=.75, rely=.77,anchor= CENTER)
 
+		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
+		Exit.pack(pady=15, padx=45, side=LEFT)
 
 ############################################
 
