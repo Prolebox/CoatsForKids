@@ -1,0 +1,18 @@
+
+
+
+See if the underscore function can be turned into a lambda statement
+When submiting an inventory item clear the entry boxes
+
+Implemented functionality for adding item types and sizes to comboboxes
+Need to figure out how to display specific item types and sizes
+based off what item name is selected on the add inventory window
+
+
+
+#### Test DB values through python3 interactive session ####
+import sqlite3 as sql
+con = sql.connect('CoatsDB')
+cur = con.cursor()
+cur.execute('Select * from Boots;')
+cur.fetchall()

@@ -1,4 +1,3 @@
-
 import sqlite3 as sql
 
 def Create():
@@ -9,31 +8,35 @@ def Create():
     #Create tables
     try:
         cur.executescript("""
-            create table if not exists Boot (
-                boot_type text check(boot_type in('Girls','Boys','Mens','Womens','Unisex')) not null,
-                boot_size text check(boot_size in('Small','Medium','Large')) not null,
+            create table if not exists Schools (
+                school_name text not null,
+                school_id integer primary key
+            );
+            create table if not exists Boots (
+                boot_type text not null,
+                boot_size text not null,
                 boot_id integer primary key
             );
-            create table if not exists Sock (
+            create table if not exists Socks (
                 sock_type text check(sock_type in('Female','Male')) not null,
                 sock_size text check(sock_size in('Small','Medium','Large')) not null,
                 sock_id integer primary key
             );
-            create table if not exists Coat (
+            create table if not exists Coats (
                 coat_type text check(coat_type in('Girls','Boys','Men','Women')) not null,
                 coat_size text check(coat_size in('Small','Medium','Large')) not null,
                 coat_id integer primary key
             );
-            create table if not exists Hat (
+            create table if not exists Hats (
                 hat_type text check(hat_type in('Male','Female')) not null,
                 hat_id integer primary key
             );
-            create table if not exists Glove (
+            create table if not exists Gloves (
                 glove_type check(glove_type in ('Boys','Girls','Mens','Womens')) not null,
                 glove_id integer primary key
             );
 
-            create table if not exists Record (
+            create table if not exists Records (
                 child_first text not null,
                 child_last text not null,
                 child_age int(2) not null,
@@ -54,15 +57,9 @@ def Create():
           );
 
         """)
-
-
-
     except:
-        Print("An error has occured.")
-        Quit()
+        print('ERROR: Failure creating database tables')
+        quit()
 
-#insert into Glove (glove_type, glove_id) values ('Boys', 1), ('Girls', 2);
-#insert into Boot (boot_type, boot_size, boot_id) values ('Girls','Small',1),('Boys','Medium',2);
-
-
+    con.commit()
     con.close()
