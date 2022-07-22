@@ -8,22 +8,9 @@ import sqlite3 as sql
 class Application(Tk):
 	def __init__(self):
 		super().__init__()
+
 		#Will do nothing if tables are already created
 		Tables.Create()
-
-		#Declare inventory item type global variables for comboboxes
-		self.Boot_Types = []
-		self.Sock_Types = []
-		self.Hat_Types = []
-		self.Coat_Types = []
-		self.Glove_Types = []
-
-		self.Boot_Sizes = []
-		self.Sock_Sizes = []
-		self.Hat_Sizes = []
-		self.Coat_Sizes = []
-		self.Glove_Sizes = []
-
 
 		self.Main_Window()
 		self.config(menu=self.menubar)
@@ -55,8 +42,8 @@ class Application(Tk):
 		self.Center_Frame.grid(row=1, sticky='nsew')
 		self.Bottom_Frame.grid(row=3, sticky='ew')
 
-	#Add item to the inventory tables - Add_Inventory_Window
-	def Add_Inventory_Item_Record(self, name, type, size=''):
+	#Add inventory item(s) to the inventory tables.
+	def Add_Inventory_Record(self, name, type, size=''):
 		print(name, type, size)
 
 		con = sql.connect('CoatsDB')
@@ -65,8 +52,7 @@ class Application(Tk):
 			cur.execute("""
 				insert into Boots (boot_type, boot_size)
 				values (?,?);
-				""",
-				(type, size))
+				""", (type, size))
 			con.commit()
 		except:
 			print('ERROR: Failure adding item to database')
@@ -74,31 +60,23 @@ class Application(Tk):
 
 		con.close()
 
-	#Match the item type to add to the corresponding combobox
-	#So that there are set item types and sizes when adding inventory
-	def Populate_Comboboxes(self, name, type='', size=''):
-		match name:
-			case 'Boots':
-				print('Boots')
-				self.Boot_Types.append(type)
-				self.Boot_Sizes.append(size)
-			case 'Socks':
-				print('Socks')
-				self.Sock_Types.append(type)
-				self.Sock_Sizes.append(size)
-			case 'Gloves':
-				print('Gloves')
-				self.Glove_Types.append(type)
-			case 'Hat':
-				print('Hat')
-				self.Hat_Types.append(type)
-			case 'Coat':
-				print('Coat')
-				self.Coat_Types.append(type)
-				self.Coat_Sizes.append(size)
+	#Add an item type and size to the respective item table
+	#These are what are shown within comboboxes when adding inventory
+	def Add_Item(self, name, type='', size=''):
+		#Set respective table values for the sql query
+		if name in ['Boots','Coat','Socks']:
+			values = (name+'_Type',name+'_Size')
+		elif name in ['Gloves','Hat']:
+			values = (name+'_Type')
 
-
-
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				insert into %s %s
+				values (?,?);
+			""" % (name, values), (type, size))
+			con.commit()
+			con.close()
 
 	################################## GUI #################################
 	#Main application window -- the menu screen
@@ -224,7 +202,7 @@ class Application(Tk):
 		Item_Size_Combobox.place(relx=.58, rely=.58,anchor= CENTER)
 
 	#Create Buttons
-		#lambda: self.Add_Inventory_Item_Record(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()),
+		#lambda: self.Add_Inventory_Record(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()),
 		Submit = Button(self.Center_Frame, text="Submit",font=("Arial",20), command='', padx=10, pady=10, width=25, bd=3)
 		Submit.place(relx=.5, rely=.9,anchor= CENTER, height=55, width=200)
 
@@ -512,8 +490,8 @@ class Application(Tk):
 		#Create Buttons
 		#Lambda is required so that the buttons command is not ran upon window creation
 		#https://stackoverflow.com/questions/8269096/why-is-button-parameter-command-executed-when-declared
-		#lambda: self.Add_Inventory_Item_Record(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()),
-		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Populate_Comboboxes(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()), bd=3)
+		#lambda: self.Add_Inventory_Record(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()),
+		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Add_Item(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()))
 		Add_Item_Submit.place(relx=.75, rely=.37,anchor= CENTER)
 
 		Remove_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)

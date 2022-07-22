@@ -2,11 +2,14 @@
 
 
 See if the underscore function can be turned into a lambda statement
-When submiting an inventory item clear the entry boxes
+When submitting an inventory item clear the entry boxes
 
 Implemented functionality for adding item types and sizes to comboboxes
 Need to figure out how to display specific item types and sizes
 based off what item name is selected on the add inventory window
+
+
+
 
 
 
@@ -16,3 +19,15 @@ con = sql.connect('CoatsDB')
 cur = con.cursor()
 cur.execute('Select * from Boots;')
 cur.fetchall()
+
+
+Revise Add_Item function. Not properly sending type and size.
+Sending two variables no matter what, need to send one
+Use Boot_Sizes values to populate comboboxes on startup
+
+Adding an inventory item:
+1. Select an item
+2. Based upon that item selected present the available types and sizes in comboboxes
+3. Type in Quantity
+4. Submit
+5. After submission clear boxes
