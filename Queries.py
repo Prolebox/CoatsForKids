@@ -21,7 +21,7 @@ def Add_Inventory_Record(name, type, size=''):
 
 
 def Add_Item(name, type='', size=''):
-	#Set respective table values for the sql query
+	#Set respective table values for the sql query.
 	if name in ['Boots','Coat','Gloves']:
 		values = (name+'_Type',name+'_Size')
 		with sql.connect('CoatsDB') as con:
