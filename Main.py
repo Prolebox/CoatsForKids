@@ -1,10 +1,12 @@
-#!python3.9 - Ethan Suhr 2022
+#!python3.10
+#Ethan Suhr 2022
 from ttkwidgets.autocomplete import AutocompleteEntry
 from tkinter import *
 from tkinter.ttk import Combobox
 import Tables
-import sqlite3 as sql
+import Queries
 
+#Create the GUI
 class Application(Tk):
 	def __init__(self):
 		super().__init__()
@@ -22,6 +24,16 @@ class Application(Tk):
 		for i in range(num):
 			underscore = underscore + '_'
 		return underscore
+
+	def Update_Entry_Boxes(self, event):
+		name = self.Add_Item_Name_Combobox.get()
+		if name in ['Boots','Coat','Gloves']:
+			if self.Add_Item_Size_Entry['state'] == 'disabled':
+				self.Add_Item_Size_Entry.config(state="normal")
+			else:
+				pass
+		elif name in ['Socks','Hat']:
+			self.Add_Item_Size_Entry.config(state="disabled")
 
 	#Configure the defaults for child windows of the menu screen
 	def Configure_Window_Defaults(self, title='', geometry='1280x720'):
@@ -41,42 +53,6 @@ class Application(Tk):
 		self.Top_Frame.grid(row=0, sticky='ew')
 		self.Center_Frame.grid(row=1, sticky='nsew')
 		self.Bottom_Frame.grid(row=3, sticky='ew')
-
-	#Add inventory item(s) to the inventory tables.
-	def Add_Inventory_Record(self, name, type, size=''):
-		print(name, type, size)
-
-		con = sql.connect('CoatsDB')
-		cur = con.cursor()
-		try:
-			cur.execute("""
-				insert into Boots (boot_type, boot_size)
-				values (?,?);
-				""", (type, size))
-			con.commit()
-		except:
-			print('ERROR: Failure adding item to database')
-			quit()
-
-		con.close()
-
-	#Add an item type and size to the respective item table
-	#These are what are shown within comboboxes when adding inventory
-	def Add_Item(self, name, type='', size=''):
-		#Set respective table values for the sql query
-		if name in ['Boots','Coat','Socks']:
-			values = (name+'_Type',name+'_Size')
-		elif name in ['Gloves','Hat']:
-			values = (name+'_Type')
-
-		with sql.connect('CoatsDB') as con:
-			cur = con.cursor()
-			cur.execute("""
-				insert into %s %s
-				values (?,?);
-			""" % (name, values), (type, size))
-			con.commit()
-			con.close()
 
 	################################## GUI #################################
 	#Main application window -- the menu screen
@@ -464,34 +440,36 @@ class Application(Tk):
 		Copyright.pack(side=BOTTOM)
 
 		#Create Entry Boxes
-		Add_Item_Type_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
-		Add_Item_Type_Entry.place(relx=.35, rely=.39,anchor= CENTER)
+		self.Add_Item_Type_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
+		self.Add_Item_Type_Entry.place(relx=.35, rely=.39,anchor= CENTER)
 
-		Add_Item_Size_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
-		Add_Item_Size_Entry.place(relx=.55, rely=.39,anchor= CENTER)
+		self.Add_Item_Size_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
+		self.Add_Item_Size_Entry.place(relx=.55, rely=.39,anchor= CENTER)
 
 		#Create Comboboxes
-		Add_Item_Name_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
-		Add_Item_Name_Combobox['values'] = ('Hat','Coat','Gloves','Boots','Socks')
-		Add_Item_Name_Combobox.place(relx=.15, rely=.39,anchor= CENTER)
+		self.Add_Item_Name_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
+		self.Add_Item_Name_Combobox.bind("<<ComboboxSelected>>", self.Update_Entry_Boxes)
+		self.Add_Item_Name_Combobox['values'] = ('Coat','Gloves','Boots','Hat','Socks')
+		self.Add_Item_Name_Combobox.place(relx=.15, rely=.39,anchor= CENTER)
 
-		Remove_Item_Name_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
-		Remove_Item_Name_Combobox['values'] = ('Hat','Coat','Gloves','Boots','Socks')
-		Remove_Item_Name_Combobox.place(relx=.15, rely=.79,anchor= CENTER)
 
-		Remove_Item_Type_Entry = Combobox(self.Center_Frame, state='readonly', width=15)
-		Remove_Item_Type_Entry['values'] = ('test')
-		Remove_Item_Type_Entry.place(relx=.35, rely=.79,anchor= CENTER)
+		self.Remove_Item_Name_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
+		self.Remove_Item_Name_Combobox['values'] = ('Coat','Gloves','Boots','Hat','Socks')
+		self.Remove_Item_Name_Combobox.place(relx=.15, rely=.79,anchor= CENTER)
 
-		Remove_Item_Size_Entry = Combobox(self.Center_Frame, state='readonly', width=15)
-		Remove_Item_Size_Entry['values'] = ('test')
-		Remove_Item_Size_Entry.place(relx=.55, rely=.79,anchor= CENTER)
+		self.Remove_Item_Type_Entry = Combobox(self.Center_Frame, state='readonly', width=15)
+		self.Remove_Item_Type_Entry['values'] = ('test')
+		self.Remove_Item_Type_Entry.place(relx=.35, rely=.79,anchor= CENTER)
+
+		self.Remove_Item_Size_Entry = Combobox(self.Center_Frame, state='readonly', width=15)
+		self.Remove_Item_Size_Entry['values'] = ('test')
+		self.Remove_Item_Size_Entry.place(relx=.55, rely=.79,anchor= CENTER)
 
 		#Create Buttons
 		#Lambda is required so that the buttons command is not ran upon window creation
 		#https://stackoverflow.com/questions/8269096/why-is-button-parameter-command-executed-when-declared
 		#lambda: self.Add_Inventory_Record(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()),
-		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Add_Item(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()))
+		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: Queries.Add_Item(self.Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()))
 		Add_Item_Submit.place(relx=.75, rely=.37,anchor= CENTER)
 
 		Remove_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)

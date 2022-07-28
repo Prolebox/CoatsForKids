@@ -1,3 +1,5 @@
+#!python3.10
+#Ethan Suhr 2022
 import sqlite3 as sql
 
 def Create():
@@ -20,7 +22,6 @@ def Create():
             );
             create table if not exists Socks (
                 Socks_Type text not null,
-                Socks_Size text not null,
                 Socks_Id integer primary key
             );
             create table if not exists Coat (
@@ -34,18 +35,18 @@ def Create():
             );
             create table if not exists Gloves (
                 Gloves_Type text not null,
+                Gloves_Size text not null,
                 Gloves_Id integer primary key
             );
 
             create table if not exists Boots_Inventory (
-                Boot_Type text not null,
-                Boot_Size text not null,
-                Boot_Id integer primary key
+                Boots_Type text not null,
+                Boots_Size text not null,
+                Boots_Id integer primary key
             );
             create table if not exists Socks_Inventory (
-                Sock_Type text not null,
-                Sock_Size text not null,
-                Sock_Id integer primary key
+                Socks_Type text not null,
+                Socks_Id integer primary key
             );
             create table if not exists Coats_Inventory (
                 Coat_Type text not null,
@@ -58,6 +59,7 @@ def Create():
             );
             create table if not exists Gloves_Inventory (
                 Gloves_Type text not null,
+                Gloves_Size text not null,
                 Gloves_Id integer primary key
             );
 
