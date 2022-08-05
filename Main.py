@@ -25,12 +25,24 @@ class Application(Tk):
 			underscore = underscore + '_'
 		return underscore
 
+	#Submit button from Add/Remove Item window
+	def Btn_Submit_Item(self, name, type, size):
+		Queries.Add_Item(name.get(),type.get(),size.get())
+		self.Clear_Entry_box(type, size)
+
+	#Remove button from Add/Remove Item window
+	def Btn_Remove_Item(self, name, type, size):
+		Queries.Remove_Item(name.get(),type.get(),size.get())
+		self.Clear_Combobox(type, size)
+
 	#Clear entry box
-	def Clear_Entry_Boxes(self, *args):
-		Queries.Add_Item(self.Add_Item_Name_Combobox.get(),self.Add_Item_Type_Entry.get(),self.Add_Item_Size_Entry.get())
+	def Clear_Entry_box(self, *args):
 		for each in args:
 			each.delete(0, END)
 
+	def Clear_Combobox(self, *args):
+		for each in args:
+			each.Items.Clear()
 
 	#Update the type and size for the remove combo boxes based off item selected for removal
 	def Update_Remove_Item_Comboboxes(self, event):
@@ -66,7 +78,7 @@ class Application(Tk):
 			else:
 				pass
 		elif name in ['Socks','Hat']:
-			self.Add_Item_Size_Entry.delete(0, END)d
+			self.Add_Item_Size_Entry.delete(0, END)
 			self.Add_Item_Size_Entry.config(state="disabled")
 
 
@@ -505,11 +517,11 @@ class Application(Tk):
 		#Create Buttons
 		#Lambda is required so that the buttons command is not ran upon window creation
 		#https://stackoverflow.com/questions/8269096/why-is-button-parameter-command-executed-when-declared
-		#lambda: self.Add_Inventory_Record(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()),
-		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Clear_Entry_Boxes(self.Add_Item_Type_Entry,self.Add_Item_Size_Entry))
+		#Passing tkinter objects instead of values bc i'll pass the entry boxes to the clear entry box function
+		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Btn_Submit_Item(self.Add_Item_Name_Combobox,self.Add_Item_Type_Entry,self.Add_Item_Size_Entry), bd=2)
 		Add_Item_Submit.place(relx=.75, rely=.37,anchor= CENTER)
 
-		Remove_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)
+		Remove_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Btn_Remove_Item(self.Remove_Item_Name_Combobox,self.Remove_Item_Type_Entry,self.Remove_Item_Size_Entry), bd=2)
 		Remove_Item_Submit.place(relx=.75, rely=.77,anchor= CENTER)
 
 		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)

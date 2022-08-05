@@ -29,7 +29,8 @@ def Add_Item(name, type='', size=''):
 			""" % (name, values), (type,))
 		con.close()
 
-
+def Remove_Item(name, type='', size=''):
+	return
 
 
 
