@@ -30,6 +30,41 @@ def Add_Item(name, type='', size=''):
 		con.close()
 
 
+
+
+
+
+
+
+
+#Grab all unique values from type column
+def Grab_Item_Types(name):
+	with sql.connect('CoatsDB') as con:
+		cur = con.cursor()
+		cur.execute("""
+			select distinct %s
+			from %s;
+		""" % (name+'_Type',name))
+		types = cur.fetchall()
+		return types
+	con.close()
+
+#Grab all unique values from size column
+def Grab_Item_Sizes(name):
+	with sql.connect('CoatsDB') as con:
+		cur = con.cursor()
+		cur.execute("""
+			select distinct %s
+			from %s;
+		""" % (name+'_Size',name))
+		sizes = cur.fetchall()
+		return sizes
+	con.close()
+
+
+
+
+
 #Add inventory item(s) to the inventory tables.
 #Needs to be redone
 def Add_Inventory_Record(name, type, size=''):
