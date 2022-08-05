@@ -25,14 +25,36 @@ class Application(Tk):
 			underscore = underscore + '_'
 		return underscore
 
+	#Clear entry box
+	def Clear_Entry_Boxes(self, *args):
+		Queries.Add_Item(self.Add_Item_Name_Combobox.get(),self.Add_Item_Type_Entry.get(),self.Add_Item_Size_Entry.get())
+		for each in args:
+			each.delete(0, END)
+
+
 	#Update the type and size for the remove combo boxes based off item selected for removal
 	def Update_Remove_Item_Comboboxes(self, event):
-		self.Remove_Item_Name_Combobox.get()
+		name = self.Remove_Item_Name_Combobox.get()
+		if name in ['Boots','Coat','Gloves']:
+			#types = Queries.Grab_Item_Types(self.Remove_Item_Name_Combobox.get())
+			#sizes = Queries.Grab_Item_Sizes(self.Remove_Item_Name_Combobox.get())
+			self.Remove_Item_Type_Entry['values'] = (Queries.Grab_Item_Types(self.Remove_Item_Name_Combobox.get()))
+			self.Remove_Item_Size_Entry['values'] = (Queries.Grab_Item_Sizes(self.Remove_Item_Name_Combobox.get()))
+		elif name in ['Socks','Hat']:
+			#types = Queries.Grab_Item_Types(self.Remove_Item_Name_Combobox.get())
+			self.Remove_Item_Type_Entry['values'] = (Queries.Grab_Item_Types(self.Remove_Item_Name_Combobox.get()))
+			self.Remove_Item_Size_Entry['values'] = ()
 
+
+
+		#types = Queries.Grab_Item_Types(self.Remove_Item_Name_Combobox.get())
+		#sizes = Queries.Grab_Item_Sizes(self.Remove_Item_Name_Combobox.get())
+
+		#print(types,sizes)
 		## IDEA:
 		#Create two functions in Queries.py to query all type and size for selected item
 		#Pass those values to here then update the combobox in this file
-		#Keep gui and sql queries separate 
+		#Keep gui and sql queries separate
 
 	#Disable or Enable the Item Size entry box for the add item window based off item selected
 	#Bound event
@@ -44,7 +66,9 @@ class Application(Tk):
 			else:
 				pass
 		elif name in ['Socks','Hat']:
+			self.Add_Item_Size_Entry.delete(0, END)d
 			self.Add_Item_Size_Entry.config(state="disabled")
+
 
 	#Configure the defaults for child windows of the menu screen
 	def Configure_Window_Defaults(self, title='', geometry='1280x720'):
@@ -473,18 +497,16 @@ class Application(Tk):
 		self.Remove_Item_Name_Combobox.place(relx=.15, rely=.79,anchor= CENTER)
 
 		self.Remove_Item_Type_Entry = Combobox(self.Center_Frame, state='readonly', width=15)
-		self.Remove_Item_Type_Entry['values'] = ('test')
 		self.Remove_Item_Type_Entry.place(relx=.35, rely=.79,anchor= CENTER)
 
 		self.Remove_Item_Size_Entry = Combobox(self.Center_Frame, state='readonly', width=15)
-		self.Remove_Item_Size_Entry['values'] = ('test')
 		self.Remove_Item_Size_Entry.place(relx=.55, rely=.79,anchor= CENTER)
 
 		#Create Buttons
 		#Lambda is required so that the buttons command is not ran upon window creation
 		#https://stackoverflow.com/questions/8269096/why-is-button-parameter-command-executed-when-declared
 		#lambda: self.Add_Inventory_Record(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()),
-		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: Queries.Add_Item(self.Add_Item_Name_Combobox.get(),self.Add_Item_Type_Entry.get(),self.Add_Item_Size_Entry.get()))
+		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Clear_Entry_Boxes(self.Add_Item_Type_Entry,self.Add_Item_Size_Entry))
 		Add_Item_Submit.place(relx=.75, rely=.37,anchor= CENTER)
 
 		Remove_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)
