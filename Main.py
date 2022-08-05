@@ -25,7 +25,18 @@ class Application(Tk):
 			underscore = underscore + '_'
 		return underscore
 
-	def Update_Entry_Boxes(self, event):
+	#Update the type and size for the remove combo boxes based off item selected for removal
+	def Update_Remove_Item_Comboboxes(self, event):
+		self.Remove_Item_Name_Combobox.get()
+
+		## IDEA:
+		#Create two functions in Queries.py to query all type and size for selected item
+		#Pass those values to here then update the combobox in this file
+		#Keep gui and sql queries separate 
+
+	#Disable or Enable the Item Size entry box for the add item window based off item selected
+	#Bound event
+	def Disable_Enable_Entry_Box(self, event):
 		name = self.Add_Item_Name_Combobox.get()
 		if name in ['Boots','Coat','Gloves']:
 			if self.Add_Item_Size_Entry['state'] == 'disabled':
@@ -89,11 +100,14 @@ class Application(Tk):
 		#Define Menu bar
 		self.menubar = Menu(self, bg='#f1f5f4', font=("Arial",13), relief=None)
 		self.filemenu = Menu(self.menubar, tearoff=0)
-		self.filemenu.add_command(label="Inventory", command=self.Inventory_Menubar)
+		#Menubar title
+		self.menubar.add_cascade(label='Database', menu=self.filemenu)
+		#Menubar option
+		self.filemenu.add_command(label="Add/Remove Item", command=self.Item_Menubar)
 		self.filemenu.add_command(label="Schools", command=self.Schools_Menubar)
 		self.filemenu.add_separator()
 		self.filemenu.add_command(label='Quit', command=quit)
-		self.menubar.add_cascade(label='Database', menu=self.filemenu)
+
 
 		#~~~ Add Widets ~~~
 		#Create Labels
@@ -400,7 +414,7 @@ class Application(Tk):
 
 	##### MENU BARS #####
 	#Inventory menubar
-	def Inventory_Menubar(self):
+	def Item_Menubar(self):
 		self.Configure_Window_Defaults(title='Settings', geometry='800x600')
 
 		#~~~ Add Widets ~~~
@@ -448,12 +462,13 @@ class Application(Tk):
 
 		#Create Comboboxes
 		self.Add_Item_Name_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
-		self.Add_Item_Name_Combobox.bind("<<ComboboxSelected>>", self.Update_Entry_Boxes)
+		self.Add_Item_Name_Combobox.bind("<<ComboboxSelected>>", self.Disable_Enable_Entry_Box)
 		self.Add_Item_Name_Combobox['values'] = ('Coat','Gloves','Boots','Hat','Socks')
 		self.Add_Item_Name_Combobox.place(relx=.15, rely=.39,anchor= CENTER)
 
 
 		self.Remove_Item_Name_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
+		self.Remove_Item_Name_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Item_Comboboxes)
 		self.Remove_Item_Name_Combobox['values'] = ('Coat','Gloves','Boots','Hat','Socks')
 		self.Remove_Item_Name_Combobox.place(relx=.15, rely=.79,anchor= CENTER)
 
@@ -469,7 +484,7 @@ class Application(Tk):
 		#Lambda is required so that the buttons command is not ran upon window creation
 		#https://stackoverflow.com/questions/8269096/why-is-button-parameter-command-executed-when-declared
 		#lambda: self.Add_Inventory_Record(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()),
-		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: Queries.Add_Item(self.Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()))
+		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: Queries.Add_Item(self.Add_Item_Name_Combobox.get(),self.Add_Item_Type_Entry.get(),self.Add_Item_Size_Entry.get()))
 		Add_Item_Submit.place(relx=.75, rely=.37,anchor= CENTER)
 
 		Remove_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)

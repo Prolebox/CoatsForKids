@@ -7,7 +7,7 @@ When submitting an inventory item clear the entry boxes
 Implemented functionality for adding item types and sizes to comboboxes
 Need to figure out how to display specific values in the type and size comboboxes based off of item selected
 Look into attribute values passed by the combobox selection event; may be able to have Update_Entry_Boxes func update both
-add and remove entry boxes. If not will just need a separate function 
+add and remove entry boxes. If not will just need a separate function
 
 Adding an inventory item:
 1. Select an item
@@ -25,7 +25,7 @@ Adding an inventory item:
 import sqlite3 as sql
 con = sql.connect('CoatsDB')
 cur = con.cursor()
-cur.execute('Select * from Gloves;')
+cur.execute('Select * from Hat;')
 cur.fetchall()
 
 import sqlite3 as sql
@@ -33,22 +33,6 @@ con = sql.connect('CoatsDB')
 cur = con.cursor()
 cur.execute("insert into Hat (Hat_Type) values ('Female');")
 
+DELETE FROM table WHERE search_condition;
 
-
-insert into Hat
-(hat_type)
-values
-('Female'),
-('Male');
-
-
-
-Socks
-Type: Men, Boy, Woman, Girl, Other
-
-Boots:
-Type: Mens
-Size: 12
-
-Hat
-Type: Male, Female, Baby
+cur.execute("delete from Hat where Hat_Type =  'Test'")
