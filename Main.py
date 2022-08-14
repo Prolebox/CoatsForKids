@@ -35,26 +35,25 @@ class Application(Tk):
 		Queries.Remove_Item(name.get(),type.get(),size.get())
 		self.Clear_Combobox(type, size)
 
-	#Clear entry box
 	def Clear_Entry_box(self, *args):
 		for each in args:
 			each.delete(0, END)
 
 	def Clear_Combobox(self, *args):
+		print(args)
 		for each in args:
-			each.Items.Clear()
+			#Set because comboboxes are populated with strings
+			each.set('')
 
 	#Update the type and size for the remove combo boxes based off item selected for removal
 	def Update_Remove_Item_Comboboxes(self, event):
 		name = self.Remove_Item_Name_Combobox.get()
 		if name in ['Boots','Coat','Gloves']:
-			#types = Queries.Grab_Item_Types(self.Remove_Item_Name_Combobox.get())
-			#sizes = Queries.Grab_Item_Sizes(self.Remove_Item_Name_Combobox.get())
 			self.Remove_Item_Type_Entry['values'] = (Queries.Grab_Item_Types(self.Remove_Item_Name_Combobox.get()))
 			self.Remove_Item_Size_Entry['values'] = (Queries.Grab_Item_Sizes(self.Remove_Item_Name_Combobox.get()))
 		elif name in ['Socks','Hat']:
-			#types = Queries.Grab_Item_Types(self.Remove_Item_Name_Combobox.get())
 			self.Remove_Item_Type_Entry['values'] = (Queries.Grab_Item_Types(self.Remove_Item_Name_Combobox.get()))
+			#Set Size Combobox to be empty
 			self.Remove_Item_Size_Entry['values'] = ()
 
 

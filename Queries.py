@@ -20,7 +20,6 @@ def Add_Item(name, type='', size=''):
 	#type must be passed as a tuple
 	elif name in ['Socks','Hat']:
 		values = (name+'_Type')
-		print(name, values, type)
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
 			cur.execute("""
@@ -29,14 +28,35 @@ def Add_Item(name, type='', size=''):
 			""" % (name, values), (type,))
 		con.close()
 
+#Remove Items from the database
 def Remove_Item(name, type='', size=''):
-	return
+
+	#Check which item is being added and set variables for the sql query
+	if name in ['Boots','Coat','Gloves']:
+		item_type = name+'_Type'
+		item_size = name+'_Size'
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				delete from %s
+				where %s = (?) and %s = (?);
+			""" % (name, item_type, item_size), (type, size))
+		con.close()
+	elif name in ['Socks','Hat']:
+		return
+		# item_type = name+'_Type'
+		# with sql.connect('CoatsDB') as con:
+		# 	cur = con.cursor()
+		# 	cur.execute("""
+		# 		delete from
+		# 	""" %
+		# con.close()
 
 
-
-
-
-
+#Redo delete statements.
+#Look at if I should be using distinct below.
+#Maybe put in a check when submitting item to ensure that one hasnt been submitted before
+#Then could use the distinct one below potentially for deleting inventory RECORDS
 
 #Grab all unique values from type column
 def Grab_Item_Types(name):
