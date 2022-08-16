@@ -1,36 +1,51 @@
 #!python3.10
 #Ethan Suhr 2022
 import sqlite3 as sql
-
 ##### Inventory Menubar #####
 #Add the allowed type and size of inventory items to be used
 #in populating the comboboxes in the add inventory window.
+
+
 def Add_Item(name, type='', size=''):
 	#Check which item is being added and set variables for the sql query
-	if name in ['Boots','Coat','Gloves']:
+	if name in ['Boots','Coat','Gloves'] and type and size != '':
+		item_type = name+'_Type'
+		item_size = name+'_Size'
 		values = (name+'_Type',name+'_Size')
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
-			cur.execute("""
-				insert into %s %s
-				values (?,?);
-			""" % (name, values), (type, size))
+			#Using %s substitution because table and column names cannot be parameterized
+			#Check if the item exists, if not add it to the database
+			cur.execute('select %s, %s from %s where %s = (?) and %s = (?)' % (item_type, item_size, name, item_type, item_size), (type, size))
+			if cur.fetchall() == []:
+				cur.execute("""
+					insert into %s %s
+					values (?,?);
+				""" % (name, values), (type, size))
+			else:
+				return 'item exists'
 		con.close()
+
 	#Separate because no size column in these tables
 	#type must be passed as a tuple
-	elif name in ['Socks','Hat']:
-		values = (name+'_Type')
+	elif name in ['Socks','Hat'] and type != '':
+		item_type = (name+'_Type')
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
-			cur.execute("""
-				insert into %s (%s)
-				values (?);
-			""" % (name, values), (type,))
+			cur.execute('select %s from %s where %s = (?)' % (item_type, name, item_type), (type,))
+			if cur.fetchall() == []:
+				cur.execute("""
+					insert into %s (%s)
+					values (?);
+				""" % (name, item_type), (type,))
+			else:
+				return 'item exists'
 		con.close()
+	else:
+		return 'empty'
 
 #Remove Items from the database
 def Remove_Item(name, type='', size=''):
-
 	#Check which item is being added and set variables for the sql query
 	if name in ['Boots','Coat','Gloves']:
 		item_type = name+'_Type'
@@ -43,20 +58,14 @@ def Remove_Item(name, type='', size=''):
 			""" % (name, item_type, item_size), (type, size))
 		con.close()
 	elif name in ['Socks','Hat']:
-		return
-		# item_type = name+'_Type'
-		# with sql.connect('CoatsDB') as con:
-		# 	cur = con.cursor()
-		# 	cur.execute("""
-		# 		delete from
-		# 	""" %
-		# con.close()
-
-
-#Redo delete statements.
-#Look at if I should be using distinct below.
-#Maybe put in a check when submitting item to ensure that one hasnt been submitted before
-#Then could use the distinct one below potentially for deleting inventory RECORDS
+		item_type = name+'_Type'
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				delete from %s
+				where %s = (?);
+			""" % (name, item_type), (type,))
+		con.close()
 
 #Grab all unique values from type column
 def Grab_Item_Types(name):

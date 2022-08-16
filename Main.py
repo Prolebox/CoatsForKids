@@ -27,25 +27,33 @@ class Application(Tk):
 
 	#Submit button from Add/Remove Item window
 	def Btn_Submit_Item(self, name, type, size):
-		Queries.Add_Item(name.get(),type.get(),size.get())
+		#Test to see if the item exists. If so, pop up notification.
+		#If item doesnt exist it will be added
+		if Queries.Add_Item(name.get(),type.get(),size.get()) == 'item exists':
+			self.Notification_Window(text='This item already exists \n in the database!')
+		elif Queries.Add_Item(name.get(),type.get(),size.get()) == 'empty':
+			self.Notification_Window(text='Please enter a value \n in every field!')
 		self.Clear_Entry_box(type, size)
 
 	#Remove button from Add/Remove Item window
 	def Btn_Remove_Item(self, name, type, size):
 		Queries.Remove_Item(name.get(),type.get(),size.get())
 		self.Clear_Combobox(type, size)
+		#Must pass an argument since the function is bound to a tkinter event and expects one
+		#Passing an emtpy string seems to work
+		self.Update_Remove_Item_Comboboxes('')
 
 	def Clear_Entry_box(self, *args):
 		for each in args:
 			each.delete(0, END)
 
 	def Clear_Combobox(self, *args):
-		print(args)
 		for each in args:
 			#Set because comboboxes are populated with strings
 			each.set('')
 
 	#Update the type and size for the remove combo boxes based off item selected for removal
+	#Bound event
 	def Update_Remove_Item_Comboboxes(self, event):
 		name = self.Remove_Item_Name_Combobox.get()
 		if name in ['Boots','Coat','Gloves']:
@@ -101,6 +109,8 @@ class Application(Tk):
 		self.Bottom_Frame.grid(row=3, sticky='ew')
 
 	################################## GUI #################################
+
+	##### MAIN GUI WINDOWS #####
 	#Main application window -- the menu screen
 	def Main_Window(self):
 
@@ -572,6 +582,19 @@ class Application(Tk):
 		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
+	##### POP-UP WINDOWS #####
+
+	def Notification_Window(self, text):
+		self.Configure_Window_Defaults(title='Item Exists', geometry='294x150')
+
+		#~~~ Add Widets ~~~
+		#Create Labels
+		Main_Label = Label(self.Center_Frame, text=text, font=("Arial",18), pady=5, bg='#f5f1f2')
+		Main_Label.place(relx=.5, rely=.5,anchor= CENTER, height=55)
+
+		#Create Buttons
+		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",13), command=self.Window.destroy, bd=3)
+		Exit.pack(pady=15, padx=45)
 	########################################################################
 
 #Exit if this is not being ran as main script
