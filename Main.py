@@ -25,6 +25,7 @@ class Application(Tk):
 			underscore = underscore + '_'
 		return underscore
 
+	#School menubar window
 	def Btn_Submit_School (self, school):
 		match Queries.Add_School(school.get()):
 			case 'school exists':
@@ -34,12 +35,13 @@ class Application(Tk):
 		self.Clear_Entry_box(school)
 		self.Remove_School_Combobox['values'] = (Queries.Grab_Schools())
 
+	#School menubar window
 	def Btn_Remove_School (self, school):
 		Queries.Remove_School(school.get())
 		self.Remove_School_Combobox['values'] = (Queries.Grab_Schools())
 		self.Clear_Combobox(school)
 
-	#Submit button from Add/Remove Item window
+	#Add/Remove Item window
 	def Btn_Submit_Item(self, name, type, size):
 		#Test to see if the item exists. If so, pop up notification.
 		#If item doesnt exist it will be added
@@ -49,13 +51,13 @@ class Application(Tk):
 			self.Notification_Window(text='Please enter a value \nin every field!')
 		self.Clear_Entry_box(type, size)
 
-	#Remove button from Add/Remove Item window
+	#Add/Remove Item window
 	def Btn_Remove_Item(self, name, type, size):
 		Queries.Remove_Item(name.get(),type.get(),size.get())
 		self.Clear_Combobox(type, size)
 		#Must pass an argument since the function is bound to a tkinter event and expects one
 		#Passing an emtpy string seems to work
-		self.Update_Remove_Item_Type_Box('')
+		self.Update_Remove_Item_Type_Combobox('')
 
 	def Clear_Entry_box(self, *args):
 		for each in args:
@@ -86,21 +88,40 @@ class Application(Tk):
 		self.Bottom_Frame.grid(row=3, sticky='ew')
 	############################# Bounds Events ############################
 
-	#Update the type for the remove combo boxes based off item selected for removal
-	def Update_Remove_Item_Type_Box(self, event):
+	#Update the Item Type based on Item selected
+	def Update_Item_Type_Combobox(self, event):
+		name = self.Item_Combobox.get()
+		if name in ['Boots','Coat','Gloves']:
+			self.Item_Type_Combobox['values'] = (Queries.Grab_Item_Types(name))
+		elif name in ['Socks','Hat']:
+			self.Item_Type_Combobox['values'] = (Queries.Grab_Item_Types(name))
+			self.Item_Size_Combobox['values'] = ()
+
+	#Update the item size based off the item type selected
+	def Update_Item_Size_Combobox(self, event):
+		#Clear the box when switching b/c certain types do not share the previously selected size
+		self.Clear_Combobox(self.Item_Size_Combobox)
+		name = self.Item_Combobox.get()
+		type = self.Item_Type_Combobox.get()
+		if name in ['Boots','Coat','Gloves']:
+			self.Item_Size_Combobox['values'] = (Queries.Grab_Item_Sizes(name, type))
+
+	#Update the item type for the remove combo boxes based off item selected for removal
+	def Update_Remove_Item_Type_Combobox(self, event):
 		name = self.Remove_Item_Name_Combobox.get()
 		if name in ['Boots','Coat','Gloves']:
-			self.Remove_Item_Type_Combobox['values'] = (Queries.Grab_Remove_Item_Types(self.Remove_Item_Name_Combobox.get()))
+			self.Remove_Item_Type_Combobox['values'] = (Queries.Grab_Item_Types(name))
 		elif name in ['Socks','Hat']:
-			self.Remove_Item_Type_Combobox['values'] = (Queries.Grab_Remove_Item_Types(self.Remove_Item_Name_Combobox.get()))
+			self.Remove_Item_Type_Combobox['values'] = (Queries.Grab_Item_Types(name))
 			#Set Size Combobox to be empty
 			self.Remove_Item_Size_Combobox['values'] = ()
 
-	#Update the size for the remove combo boxes based off item type selected for removal
-	def Update_Remove_Item_Size_Box(self, event):
+	#Update the item size for the remove combo boxes based off item type selected for removal
+	def Update_Remove_Item_Size_Combobox(self, event):
 		name = self.Remove_Item_Name_Combobox.get()
+		type = self.Remove_Item_Type_Combobox.get()
 		if name in ['Boots','Coat','Gloves']:
-			self.Remove_Item_Size_Combobox['values'] = (Queries.Grab_Remove_Item_Sizes(self.Remove_Item_Name_Combobox.get(), self.Remove_Item_Type_Combobox.get()))
+			self.Remove_Item_Size_Combobox['values'] = (Queries.Grab_Item_Sizes(name, type))
 
 	#Disable or Enable the Item Size entry box for the add item window based off item selected
 	def Disable_Enable_Entry_Box(self, event):
@@ -115,12 +136,10 @@ class Application(Tk):
 			self.Add_Item_Size_Entry.config(state="disabled")
 
 
-
-
 	################################## GUI #################################
 
 	##### MAIN GUI WINDOWS #####
-	#Main application window -- the menu screen
+	#Menu screen
 	def Main_Window(self):
 
 		self.title('Coats for Kids - Inventory & Record Tracker')
@@ -200,7 +219,6 @@ class Application(Tk):
 		Add_Record = Button(Center_Right_Frame, text="View record", command=self.View_Record_Window, font=("Arial",20), bd=3)
 		Add_Record.place(relx=.5, rely=.62,anchor= CENTER, height=55, width=200)
 
-	#Add Inventory window
 	def Add_Inventory_Window(self):
 	#Create Add Inventory Window
 		self.Configure_Window_Defaults(title='Add Inventory')
@@ -222,28 +240,28 @@ class Application(Tk):
 		Item_Size = Label(self.Center_Frame, text='Item Size:', font=("Arial",23), pady=5, bg='#f5f1f2')
 		Item_Size.place(relx=.42, rely=.58,anchor= CENTER, height=55, width=200)
 
-		Item_Amount = Label(self.Center_Frame, text='Quantity:', font=("Arial",22), pady=5, bg='#f5f1f2')
+		Item_Amount = Label(self.Center_Frame, text='Amount:', font=("Arial",22), pady=5, bg='#f5f1f2')
 		Item_Amount.place(relx=.42, rely=.74,anchor= CENTER, height=55, width=200)
 
 		Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
 		Copyright.pack(side=BOTTOM)
 
-	#Create Entry Widgets
-		Item_Amount_Entry = Entry(self.Center_Frame, text='Enter amount',font=("Arial",14))
-		Item_Amount_Entry.place(relx=.58, rely=.74,anchor= CENTER)
-
 	#Create Combobox Widgets
-		Item_Combobox = Combobox(self.Center_Frame, text='Select an item', state='readonly',font=("Arial",14))
-		Item_Combobox['values'] = ('Hat','Coat','Gloves','Boots','Socks')
-		Item_Combobox.place(relx=.58, rely=.22,anchor= CENTER)
+		self.Item_Combobox = Combobox(self.Center_Frame, text='Select an item', state='readonly',font=("Arial",14))
+		self.Item_Combobox['values'] = ('Hat','Coat','Gloves','Boots','Socks')
+		self.Item_Combobox.bind("<<ComboboxSelected>>", self.Update_Item_Type_Combobox)
+		self.Item_Combobox.place(relx=.58, rely=.22,anchor= CENTER)
 
-		Item_Type_Combobox = Combobox(self.Center_Frame, text='Select item type', state='readonly',font=("Arial",14))
-		Item_Type_Combobox['values'] = ('test','test2','test3')
-		Item_Type_Combobox.place(relx=.58, rely=.4,anchor= CENTER)
+		self.Item_Type_Combobox = Combobox(self.Center_Frame, text='Select item type', state='readonly',font=("Arial",14))
+		self.Item_Type_Combobox.bind("<<ComboboxSelected>>", self.Update_Item_Size_Combobox)
+		self.Item_Type_Combobox.place(relx=.58, rely=.4,anchor= CENTER)
 
-		Item_Size_Combobox = Combobox(self.Center_Frame, text='Select item size', state='readonly',font=("Arial",14))
-		Item_Size_Combobox['values'] = ('test','test2','test3')
-		Item_Size_Combobox.place(relx=.58, rely=.58,anchor= CENTER)
+		self.Item_Size_Combobox = Combobox(self.Center_Frame, text='Select item size', state='readonly',font=("Arial",14))
+		self.Item_Size_Combobox.place(relx=.58, rely=.58,anchor= CENTER)
+
+	#Create Entry Widgets
+		self.Item_Amount_Entry = Entry(self.Center_Frame, text='Enter amount',font=("Arial",14))
+		self.Item_Amount_Entry.place(relx=.58, rely=.74,anchor= CENTER)
 
 	#Create Buttons
 		#lambda: self.Add_Inventory_Record(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()),
@@ -253,7 +271,6 @@ class Application(Tk):
 		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
-	#View Inventory window
 	def View_Inventory_Window(self):
 		#Create View Inventory Window
 		self.Configure_Window_Defaults(title='View Inventory')
@@ -293,7 +310,6 @@ class Application(Tk):
 		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
-	#Add Record window
 	def Add_Record_Window(self):
 		#Create Add Record Window
 		self.Configure_Window_Defaults(title='Add Record')
@@ -423,7 +439,6 @@ class Application(Tk):
 		Submit = Button(self.Center_Frame, text="Submit Record", font=("Arial",15), command='', bd=3)
 		Submit.place(relx=.5,rely=.93,anchor=CENTER)
 
-	#View Record window
 	def View_Record_Window(self):
 		#Create View Record Window
 		self.Configure_Window_Defaults(title='View Record')
@@ -467,7 +482,6 @@ class Application(Tk):
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
 	##### MENU BARS #####
-	#Inventory menubar
 	def Item_Menubar(self):
 		self.Configure_Window_Defaults(title='Settings', geometry='800x600')
 
@@ -522,12 +536,12 @@ class Application(Tk):
 
 
 		self.Remove_Item_Name_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
-		self.Remove_Item_Name_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Item_Type_Box)
+		self.Remove_Item_Name_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Item_Type_Combobox)
 		self.Remove_Item_Name_Combobox['values'] = ('Coat','Gloves','Boots','Hat','Socks')
 		self.Remove_Item_Name_Combobox.place(relx=.15, rely=.79,anchor= CENTER)
 
 		self.Remove_Item_Type_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
-		self.Remove_Item_Type_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Item_Size_Box)
+		self.Remove_Item_Type_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Item_Size_Combobox)
 		self.Remove_Item_Type_Combobox.place(relx=.35, rely=.79,anchor= CENTER)
 
 		self.Remove_Item_Size_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
@@ -546,7 +560,6 @@ class Application(Tk):
 		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=2)
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
-	#Schools menubar
 	def Schools_Menubar(self):
 		self.Configure_Window_Defaults(title='Schools', geometry='800x600')
 
@@ -593,7 +606,6 @@ class Application(Tk):
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
 	##### POP-UP WINDOWS #####
-
 	def Notification_Window(self, text):
 		self.Configure_Window_Defaults(title='Notification', geometry='640x200')
 

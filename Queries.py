@@ -105,7 +105,7 @@ def Grab_Schools():
 	con.close()
 
 #Grab all unique values from type column
-def Grab_Remove_Item_Types(name):
+def Grab_Item_Types(name):
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
 		cur.execute("""
@@ -117,13 +117,13 @@ def Grab_Remove_Item_Types(name):
 	con.close()
 
 #Grab all unique values from size column
-def Grab_Remove_Item_Sizes(name, type):
+def Grab_Item_Sizes(name, type):
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
 		cur.execute("""
 			select %s
 			from %s where %s = (?);
-		""" % (name+'_Size', name, name+'_Type'), (type))
+		""" % (name+'_Size', name, name+'_Type'), (type,))
 		sizes = cur.fetchall()
 		return sizes
 	con.close()
