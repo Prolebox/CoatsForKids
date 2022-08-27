@@ -25,14 +25,28 @@ class Application(Tk):
 			underscore = underscore + '_'
 		return underscore
 
+	def Btn_Submit_School (self, school):
+		match Queries.Add_School(school.get()):
+			case 'school exists':
+				self.Notification_Window(text='This School has already been \nadded to the database!')
+			case 'empty':
+				self.Notification_Window(text='You must enter a school name \nto beadded to the database!')
+		self.Clear_Entry_box(school)
+		self.Remove_School_Combobox['values'] = (Queries.Grab_Schools())
+
+	def Btn_Remove_School (self, school):
+		Queries.Remove_School(school.get())
+		self.Remove_School_Combobox['values'] = (Queries.Grab_Schools())
+		self.Clear_Combobox(school)
+
 	#Submit button from Add/Remove Item window
 	def Btn_Submit_Item(self, name, type, size):
 		#Test to see if the item exists. If so, pop up notification.
 		#If item doesnt exist it will be added
 		if Queries.Add_Item(name.get(),type.get(),size.get()) == 'item exists':
-			self.Notification_Window(text='This item already exists \n in the database!')
+			self.Notification_Window(text='This item already exists \nin the database!')
 		elif Queries.Add_Item(name.get(),type.get(),size.get()) == 'empty':
-			self.Notification_Window(text='Please enter a value \n in every field!')
+			self.Notification_Window(text='Please enter a value \nin every field!')
 		self.Clear_Entry_box(type, size)
 
 	#Remove button from Add/Remove Item window
@@ -41,7 +55,7 @@ class Application(Tk):
 		self.Clear_Combobox(type, size)
 		#Must pass an argument since the function is bound to a tkinter event and expects one
 		#Passing an emtpy string seems to work
-		self.Update_Remove_Item_Comboboxes('')
+		self.Update_Remove_Item_Type_Box('')
 
 	def Clear_Entry_box(self, *args):
 		for each in args:
@@ -51,43 +65,6 @@ class Application(Tk):
 		for each in args:
 			#Set because comboboxes are populated with strings
 			each.set('')
-
-	#Update the type and size for the remove combo boxes based off item selected for removal
-	#Bound event
-	def Update_Remove_Item_Comboboxes(self, event):
-		name = self.Remove_Item_Name_Combobox.get()
-		if name in ['Boots','Coat','Gloves']:
-			self.Remove_Item_Type_Entry['values'] = (Queries.Grab_Item_Types(self.Remove_Item_Name_Combobox.get()))
-			self.Remove_Item_Size_Entry['values'] = (Queries.Grab_Item_Sizes(self.Remove_Item_Name_Combobox.get()))
-		elif name in ['Socks','Hat']:
-			self.Remove_Item_Type_Entry['values'] = (Queries.Grab_Item_Types(self.Remove_Item_Name_Combobox.get()))
-			#Set Size Combobox to be empty
-			self.Remove_Item_Size_Entry['values'] = ()
-
-
-
-		#types = Queries.Grab_Item_Types(self.Remove_Item_Name_Combobox.get())
-		#sizes = Queries.Grab_Item_Sizes(self.Remove_Item_Name_Combobox.get())
-
-		#print(types,sizes)
-		## IDEA:
-		#Create two functions in Queries.py to query all type and size for selected item
-		#Pass those values to here then update the combobox in this file
-		#Keep gui and sql queries separate
-
-	#Disable or Enable the Item Size entry box for the add item window based off item selected
-	#Bound event
-	def Disable_Enable_Entry_Box(self, event):
-		name = self.Add_Item_Name_Combobox.get()
-		if name in ['Boots','Coat','Gloves']:
-			if self.Add_Item_Size_Entry['state'] == 'disabled':
-				self.Add_Item_Size_Entry.config(state="normal")
-			else:
-				pass
-		elif name in ['Socks','Hat']:
-			self.Add_Item_Size_Entry.delete(0, END)
-			self.Add_Item_Size_Entry.config(state="disabled")
-
 
 	#Configure the defaults for child windows of the menu screen
 	def Configure_Window_Defaults(self, title='', geometry='1280x720'):
@@ -107,6 +84,38 @@ class Application(Tk):
 		self.Top_Frame.grid(row=0, sticky='ew')
 		self.Center_Frame.grid(row=1, sticky='nsew')
 		self.Bottom_Frame.grid(row=3, sticky='ew')
+	############################# Bounds Events ############################
+
+	#Update the type for the remove combo boxes based off item selected for removal
+	def Update_Remove_Item_Type_Box(self, event):
+		name = self.Remove_Item_Name_Combobox.get()
+		if name in ['Boots','Coat','Gloves']:
+			self.Remove_Item_Type_Combobox['values'] = (Queries.Grab_Remove_Item_Types(self.Remove_Item_Name_Combobox.get()))
+		elif name in ['Socks','Hat']:
+			self.Remove_Item_Type_Combobox['values'] = (Queries.Grab_Remove_Item_Types(self.Remove_Item_Name_Combobox.get()))
+			#Set Size Combobox to be empty
+			self.Remove_Item_Size_Combobox['values'] = ()
+
+	#Update the size for the remove combo boxes based off item type selected for removal
+	def Update_Remove_Item_Size_Box(self, event):
+		name = self.Remove_Item_Name_Combobox.get()
+		if name in ['Boots','Coat','Gloves']:
+			self.Remove_Item_Size_Combobox['values'] = (Queries.Grab_Remove_Item_Sizes(self.Remove_Item_Name_Combobox.get(), self.Remove_Item_Type_Combobox.get()))
+
+	#Disable or Enable the Item Size entry box for the add item window based off item selected
+	def Disable_Enable_Entry_Box(self, event):
+		name = self.Add_Item_Name_Combobox.get()
+		if name in ['Boots','Coat','Gloves']:
+			if self.Add_Item_Size_Entry['state'] == 'disabled':
+				self.Add_Item_Size_Entry.config(state="normal")
+			else:
+				pass
+		elif name in ['Socks','Hat']:
+			self.Add_Item_Size_Entry.delete(0, END)
+			self.Add_Item_Size_Entry.config(state="disabled")
+
+
+
 
 	################################## GUI #################################
 
@@ -513,27 +522,28 @@ class Application(Tk):
 
 
 		self.Remove_Item_Name_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
-		self.Remove_Item_Name_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Item_Comboboxes)
+		self.Remove_Item_Name_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Item_Type_Box)
 		self.Remove_Item_Name_Combobox['values'] = ('Coat','Gloves','Boots','Hat','Socks')
 		self.Remove_Item_Name_Combobox.place(relx=.15, rely=.79,anchor= CENTER)
 
-		self.Remove_Item_Type_Entry = Combobox(self.Center_Frame, state='readonly', width=15)
-		self.Remove_Item_Type_Entry.place(relx=.35, rely=.79,anchor= CENTER)
+		self.Remove_Item_Type_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
+		self.Remove_Item_Type_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Item_Size_Box)
+		self.Remove_Item_Type_Combobox.place(relx=.35, rely=.79,anchor= CENTER)
 
-		self.Remove_Item_Size_Entry = Combobox(self.Center_Frame, state='readonly', width=15)
-		self.Remove_Item_Size_Entry.place(relx=.55, rely=.79,anchor= CENTER)
+		self.Remove_Item_Size_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
+		self.Remove_Item_Size_Combobox.place(relx=.55, rely=.79,anchor= CENTER)
 
 		#Create Buttons
 		#Lambda is required so that the buttons command is not ran upon window creation
 		#https://stackoverflow.com/questions/8269096/why-is-button-parameter-command-executed-when-declared
 		#Passing tkinter objects instead of values bc i'll pass the entry boxes to the clear entry box function
-		Add_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Btn_Submit_Item(self.Add_Item_Name_Combobox,self.Add_Item_Type_Entry,self.Add_Item_Size_Entry), bd=2)
-		Add_Item_Submit.place(relx=.75, rely=.37,anchor= CENTER)
+		Add_Item_Submit_Btn = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Btn_Submit_Item(self.Add_Item_Name_Combobox,self.Add_Item_Type_Entry,self.Add_Item_Size_Entry), bd=2)
+		Add_Item_Submit_Btn.place(relx=.75, rely=.37,anchor= CENTER)
 
-		Remove_Item_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Btn_Remove_Item(self.Remove_Item_Name_Combobox,self.Remove_Item_Type_Entry,self.Remove_Item_Size_Entry), bd=2)
-		Remove_Item_Submit.place(relx=.75, rely=.77,anchor= CENTER)
+		Remove_Item_Submit_Btn = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Btn_Remove_Item(self.Remove_Item_Name_Combobox,self.Remove_Item_Type_Combobox,self.Remove_Item_Size_Combobox), bd=2)
+		Remove_Item_Submit_Btn.place(relx=.75, rely=.77,anchor= CENTER)
 
-		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
+		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=2)
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
 	#Schools menubar
@@ -564,28 +574,28 @@ class Application(Tk):
 		Copyright.pack(side=BOTTOM)
 
 		#Create Entry Boxes
-		Add_School_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
-		Add_School_Entry.place(relx=.5, rely=.39,anchor= CENTER)
+		self.Add_School_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
+		self.Add_School_Entry.place(relx=.5, rely=.39,anchor= CENTER)
 
 		#Create Combobox
-		Remove_School_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
-		Remove_School_Combobox['values'] = ('test')
-		Remove_School_Combobox.place(relx=.5, rely=.79,anchor= CENTER)
+		self.Remove_School_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
+		self.Remove_School_Combobox['values'] = (Queries.Grab_Schools())
+		self.Remove_School_Combobox.place(relx=.5, rely=.79,anchor= CENTER)
 
 		#Create Buttons
-		Add_School_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)
+		Add_School_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Btn_Submit_School(self.Add_School_Entry), bd=2)
 		Add_School_Submit.place(relx=.75, rely=.37,anchor= CENTER)
 
-		Remove_School_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command='', bd=3)
+		Remove_School_Submit = Button(self.Center_Frame, text="Submit", font=("Arial",14), command=lambda: self.Btn_Remove_School(self.Remove_School_Combobox), bd=2)
 		Remove_School_Submit.place(relx=.75, rely=.77,anchor= CENTER)
 
-		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
+		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=2)
 		Exit.pack(pady=15, padx=45, side=LEFT)
 
 	##### POP-UP WINDOWS #####
 
 	def Notification_Window(self, text):
-		self.Configure_Window_Defaults(title='Item Exists', geometry='294x150')
+		self.Configure_Window_Defaults(title='Notification', geometry='640x200')
 
 		#~~~ Add Widets ~~~
 		#Create Labels
@@ -593,7 +603,7 @@ class Application(Tk):
 		Main_Label.place(relx=.5, rely=.5,anchor= CENTER, height=55)
 
 		#Create Buttons
-		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",13), command=self.Window.destroy, bd=3)
+		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",13), command=self.Window.destroy, bd=2)
 		Exit.pack(pady=15, padx=45)
 	########################################################################
 
