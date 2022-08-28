@@ -25,7 +25,7 @@ def Add_School(school):
 
 def Add_Item(name, type='', size=''):
 	#Check which item is being added and set variables for the sql query
-	if name in ['Boots','Coat','Gloves'] and type and size != '':
+	if name in ['Boots','Coats','Gloves'] and type and size != '':
 		item_type = name+'_Type'
 		item_size = name+'_Size'
 		values = (name+'_Type',name+'_Size')
@@ -44,7 +44,7 @@ def Add_Item(name, type='', size=''):
 		con.close()
 	#Separate because no size column in these tables
 	#type must be passed as a tuple
-	elif name in ['Socks','Hat'] and type != '':
+	elif name in ['Socks','Hats'] and type != '':
 		item_type = (name+'_Type')
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
@@ -61,12 +61,40 @@ def Add_Item(name, type='', size=''):
 	else:
 		return 'empty'
 
+def Add_Inventory_Record(name, type, size='', amount=''):
+	#print(name, type, size, amount)
+	if name in ['Boots','Coats','Gloves']:
+		item_type = name+'_Type'
+		item_size = name+'_Size'
+		values = (name+'_Type',name+'_Size')
+		i = 0
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			while(i < int(amount)):
+				cur.execute("""
+					insert into %s %s
+					values (?,?);
+				""" % (name+'_Inventory', values), (type, size))
+				i += 1
+		con.close()
+	elif name in ['Socks','Hats'] and type != '':
+		item_type = (name+'_Type')
+		i = 0
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			while(i < int(amount)):
+				cur.execute("""
+					insert into %s (%s)
+					values (?);
+				""" % (name+'_Inventory', item_type), (type,))
+				i += 1
+		con.close()
 
 
 #Remove Items from the database
 def Remove_Item(name, type='', size=''):
 	#Check which item is being added and set variables for the sql query
-	if name in ['Boots','Coat','Gloves']:
+	if name in ['Boots','Coats','Gloves']:
 		item_type = name+'_Type'
 		item_size = name+'_Size'
 		with sql.connect('CoatsDB') as con:
@@ -76,7 +104,7 @@ def Remove_Item(name, type='', size=''):
 				where %s = (?) and %s = (?);
 			""" % (name, item_type, item_size), (type, size))
 		con.close()
-	elif name in ['Socks','Hat']:
+	elif name in ['Socks','Hats']:
 		item_type = name+'_Type'
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
@@ -104,7 +132,7 @@ def Grab_Schools():
 		return schools
 	con.close()
 
-#Grab all unique values from type column
+#Grab all values from type column
 def Grab_Item_Types(name):
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
@@ -127,23 +155,3 @@ def Grab_Item_Sizes(name, type):
 		sizes = cur.fetchall()
 		return sizes
 	con.close()
-
-#cur.execute('Select Coat_Size from Coat where Coat_Type = "A";')
-
-
-#Add inventory item(s) to the inventory tables.
-#Needs to be redone
-def Add_Inventory_Record(name, type, size=''):
-
-	try:
-		con = sql.connect('CoatsDB')
-		cur = con.cursor()
-		cur.execute("""
-			insert into Boots (boot_type, boot_size)
-			values (?,?);
-			""", (type, size))
-		con.commit()
-		con.close()
-	except:
-		print('ERROR: Failure adding item to database')
-		quit()

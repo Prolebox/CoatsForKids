@@ -24,14 +24,14 @@ def Create():
                 Socks_Type text not null,
                 Socks_Id integer primary key
             );
-            create table if not exists Coat (
-                Coat_Type text not null,
-                Coat_Size text not null,
-                Coat_Id integer primary key
+            create table if not exists Coats (
+                Coats_Type text not null,
+                Coats_Size text not null,
+                Coats_Id integer primary key
             );
-            create table if not exists Hat (
-                Hat_Type text not null,
-                Hat_Id integer primary key
+            create table if not exists Hats (
+                Hats_Type text not null,
+                Hats_Id integer primary key
             );
             create table if not exists Gloves (
                 Gloves_Type text not null,
@@ -49,13 +49,13 @@ def Create():
                 Socks_Id integer primary key
             );
             create table if not exists Coats_Inventory (
-                Coat_Type text not null,
-                Coat_Size text not null,
-                Coat_Id integer primary key
+                Coats_Type text not null,
+                Coats_Size text not null,
+                Coats_Id integer primary key
             );
             create table if not exists Hats_Inventory (
-                Hat_Type text not null,
-                Hat_Id integer primary key
+                Hats_Type text not null,
+                Hats_Id integer primary key
             );
             create table if not exists Gloves_Inventory (
                 Gloves_Type text not null,

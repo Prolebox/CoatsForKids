@@ -25,8 +25,15 @@ class Application(Tk):
 			underscore = underscore + '_'
 		return underscore
 
+	#Add record window
+	def Btn_Submit_Inventory(self, name, type, size='', amount=''):
+		Queries.Add_Inventory_Record(name.get(),type.get(),size.get(),amount.get())
+		self.Clear_Combobox(name, type, size)
+		self.Clear_Entry_box(amount)
+
+
 	#School menubar window
-	def Btn_Submit_School (self, school):
+	def Btn_Submit_School(self, school):
 		match Queries.Add_School(school.get()):
 			case 'school exists':
 				self.Notification_Window(text='This School has already been \nadded to the database!')
@@ -36,7 +43,7 @@ class Application(Tk):
 		self.Remove_School_Combobox['values'] = (Queries.Grab_Schools())
 
 	#School menubar window
-	def Btn_Remove_School (self, school):
+	def Btn_Remove_School(self, school):
 		Queries.Remove_School(school.get())
 		self.Remove_School_Combobox['values'] = (Queries.Grab_Schools())
 		self.Clear_Combobox(school)
@@ -90,10 +97,12 @@ class Application(Tk):
 
 	#Update the Item Type based on Item selected
 	def Update_Item_Type_Combobox(self, event):
+		self.Clear_Combobox(self.Item_Type_Combobox)
+		self.Clear_Combobox(self.Item_Size_Combobox)
 		name = self.Item_Combobox.get()
-		if name in ['Boots','Coat','Gloves']:
+		if name in ['Boots','Coats','Gloves']:
 			self.Item_Type_Combobox['values'] = (Queries.Grab_Item_Types(name))
-		elif name in ['Socks','Hat']:
+		elif name in ['Socks','Hats']:
 			self.Item_Type_Combobox['values'] = (Queries.Grab_Item_Types(name))
 			self.Item_Size_Combobox['values'] = ()
 
@@ -103,15 +112,17 @@ class Application(Tk):
 		self.Clear_Combobox(self.Item_Size_Combobox)
 		name = self.Item_Combobox.get()
 		type = self.Item_Type_Combobox.get()
-		if name in ['Boots','Coat','Gloves']:
+		if name in ['Boots','Coats','Gloves']:
 			self.Item_Size_Combobox['values'] = (Queries.Grab_Item_Sizes(name, type))
 
 	#Update the item type for the remove combo boxes based off item selected for removal
 	def Update_Remove_Item_Type_Combobox(self, event):
+		self.Clear_Combobox(self.Remove_Item_Type_Combobox)
+		self.Clear_Combobox(self.Remove_Item_Size_Combobox)
 		name = self.Remove_Item_Name_Combobox.get()
-		if name in ['Boots','Coat','Gloves']:
+		if name in ['Boots','Coats','Gloves']:
 			self.Remove_Item_Type_Combobox['values'] = (Queries.Grab_Item_Types(name))
-		elif name in ['Socks','Hat']:
+		elif name in ['Socks','Hats']:
 			self.Remove_Item_Type_Combobox['values'] = (Queries.Grab_Item_Types(name))
 			#Set Size Combobox to be empty
 			self.Remove_Item_Size_Combobox['values'] = ()
@@ -120,18 +131,18 @@ class Application(Tk):
 	def Update_Remove_Item_Size_Combobox(self, event):
 		name = self.Remove_Item_Name_Combobox.get()
 		type = self.Remove_Item_Type_Combobox.get()
-		if name in ['Boots','Coat','Gloves']:
+		if name in ['Boots','Coats','Gloves']:
 			self.Remove_Item_Size_Combobox['values'] = (Queries.Grab_Item_Sizes(name, type))
 
 	#Disable or Enable the Item Size entry box for the add item window based off item selected
 	def Disable_Enable_Entry_Box(self, event):
 		name = self.Add_Item_Name_Combobox.get()
-		if name in ['Boots','Coat','Gloves']:
+		if name in ['Boots','Coats','Gloves']:
 			if self.Add_Item_Size_Entry['state'] == 'disabled':
 				self.Add_Item_Size_Entry.config(state="normal")
 			else:
 				pass
-		elif name in ['Socks','Hat']:
+		elif name in ['Socks','Hats']:
 			self.Add_Item_Size_Entry.delete(0, END)
 			self.Add_Item_Size_Entry.config(state="disabled")
 
@@ -248,7 +259,7 @@ class Application(Tk):
 
 	#Create Combobox Widgets
 		self.Item_Combobox = Combobox(self.Center_Frame, text='Select an item', state='readonly',font=("Arial",14))
-		self.Item_Combobox['values'] = ('Hat','Coat','Gloves','Boots','Socks')
+		self.Item_Combobox['values'] = ('Hats','Coats','Gloves','Boots','Socks')
 		self.Item_Combobox.bind("<<ComboboxSelected>>", self.Update_Item_Type_Combobox)
 		self.Item_Combobox.place(relx=.58, rely=.22,anchor= CENTER)
 
@@ -265,7 +276,8 @@ class Application(Tk):
 
 	#Create Buttons
 		#lambda: self.Add_Inventory_Record(Add_Item_Name_Combobox.get(),Add_Item_Type_Entry.get(),Add_Item_Size_Entry.get()),
-		Submit = Button(self.Center_Frame, text="Submit",font=("Arial",20), command='', padx=10, pady=10, width=25, bd=3)
+		#lambda: self.Btn_Submit_Record(self.Item_Combobox, self.Item_Type_Combobox, self.Item_Size_Combobox, self.Item_Amount_Entry)
+		Submit = Button(self.Center_Frame, text="Submit",font=("Arial",20), command=lambda: self.Btn_Submit_Inventory(self.Item_Combobox, self.Item_Type_Combobox, self.Item_Size_Combobox, self.Item_Amount_Entry), padx=10, pady=10, width=25, bd=3)
 		Submit.place(relx=.5, rely=.9,anchor= CENTER, height=55, width=200)
 
 		Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
@@ -439,6 +451,7 @@ class Application(Tk):
 		Submit = Button(self.Center_Frame, text="Submit Record", font=("Arial",15), command='', bd=3)
 		Submit.place(relx=.5,rely=.93,anchor=CENTER)
 
+
 	def View_Record_Window(self):
 		#Create View Record Window
 		self.Configure_Window_Defaults(title='View Record')
@@ -531,13 +544,13 @@ class Application(Tk):
 		#Create Comboboxes
 		self.Add_Item_Name_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
 		self.Add_Item_Name_Combobox.bind("<<ComboboxSelected>>", self.Disable_Enable_Entry_Box)
-		self.Add_Item_Name_Combobox['values'] = ('Coat','Gloves','Boots','Hat','Socks')
+		self.Add_Item_Name_Combobox['values'] = ('Coats','Gloves','Boots','Hats','Socks')
 		self.Add_Item_Name_Combobox.place(relx=.15, rely=.39,anchor= CENTER)
 
 
 		self.Remove_Item_Name_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
 		self.Remove_Item_Name_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Item_Type_Combobox)
-		self.Remove_Item_Name_Combobox['values'] = ('Coat','Gloves','Boots','Hat','Socks')
+		self.Remove_Item_Name_Combobox['values'] = ('Coats','Gloves','Boots','Hats','Socks')
 		self.Remove_Item_Name_Combobox.place(relx=.15, rely=.79,anchor= CENTER)
 
 		self.Remove_Item_Type_Combobox = Combobox(self.Center_Frame, state='readonly', width=15)
