@@ -9,5 +9,16 @@ Find them at: https://coatsforkidsmt.org/
 
 
 Dependencies:
+python3.10
 pip3 install ttkwidgets
 pip3 install pillow
+
+or if installing python3 with apt
+
+(python3)
+sudo apt install software-properties-common -y
+sudo add-apt-repository ppa:deadsnakes/ppa
+(ttk and pil)
+sudo add-apt-repository ppa:j-4321-i/ttkwidgets
+sudo apt-get update
+sudo apt-get install python(3)-ttkwidgets
