@@ -1,27 +1,89 @@
 #!python3.10
 #Ethan Suhr 2022
+#This file is for all the database queries needed to populate the application
 import sqlite3 as sql
-##### Inventory Menubar #####
-#Add the allowed type and size of inventory items to be used
-#in populating the comboboxes in the add inventory window.
 
-
-def Add_School(school):
-	if school != '':
+## Remove Inventory Window ##
+def Remove_Inventory_Record(name, type, size='', amount=''):
+	if name in ['Boots','Coats','Gloves']:
+		item_type = name+'_Type'
+		item_size = name+'_Size'
+		values = (name+'_Type',name+'_Size')
+		i = 0
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
-			#cur.execute("insert into Schools (School_Name) values ('test');")
-			cur.execute('select School_Name from Schools where School_Name = (?);', (school,))
-			if cur.fetchall() == []:
+			while(i < int(amount)):
 				cur.execute("""
-					insert into Schools (School_Name)
-					values(?);
-				""", (school,))
-			else:
-				return 'school exists'
+
+				""" % (name+'_Inventory', values), (type, size))
+				i += 1
 		con.close()
-	else:
-		return 'empty'
+	elif name in ['Socks','Hats'] and type != '':
+		item_type = (name+'_Type')
+		i = 0
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			while(i < int(amount)):
+				cur.execute("""
+
+				""" % (name+'_Inventory', item_type), (type,))
+				i += 1
+		con.close()
+
+
+## Add Inventory Window##
+def Add_Inventory_Record(name, type, size='', amount=''):
+	#print(name, type, size, amount)
+	if name in ['Boots','Coats','Gloves']:
+		item_type = name+'_Type'
+		item_size = name+'_Size'
+		values = (name+'_Type',name+'_Size')
+		i = 0
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			while(i < int(amount)):
+				cur.execute("""
+					insert into %s %s
+					values (?,?);
+				""" % (name+'_Inventory', values), (type, size))
+				i += 1
+		con.close()
+	elif name in ['Socks','Hats'] and type != '':
+		item_type = (name+'_Type')
+		i = 0
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			while(i < int(amount)):
+				cur.execute("""
+					insert into %s (%s)
+					values (?);
+				""" % (name+'_Inventory', item_type), (type,))
+				i += 1
+		con.close()
+
+
+## Items Window ##
+def Remove_Item(name, type='', size=''):
+	#Check which item is being added and set variables for the sql query
+	if name in ['Boots','Coats','Gloves']:
+		item_type = name+'_Type'
+		item_size = name+'_Size'
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				delete from %s
+				where %s = (?) and %s = (?);
+			""" % (name, item_type, item_size), (type, size))
+		con.close()
+	elif name in ['Socks','Hats']:
+		item_type = name+'_Type'
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				delete from %s
+				where %s = (?);
+			""" % (name, item_type), (type,))
+		con.close()
 
 def Add_Item(name, type='', size=''):
 	#Check which item is being added and set variables for the sql query
@@ -61,59 +123,7 @@ def Add_Item(name, type='', size=''):
 	else:
 		return 'empty'
 
-def Add_Inventory_Record(name, type, size='', amount=''):
-	#print(name, type, size, amount)
-	if name in ['Boots','Coats','Gloves']:
-		item_type = name+'_Type'
-		item_size = name+'_Size'
-		values = (name+'_Type',name+'_Size')
-		i = 0
-		with sql.connect('CoatsDB') as con:
-			cur = con.cursor()
-			while(i < int(amount)):
-				cur.execute("""
-					insert into %s %s
-					values (?,?);
-				""" % (name+'_Inventory', values), (type, size))
-				i += 1
-		con.close()
-	elif name in ['Socks','Hats'] and type != '':
-		item_type = (name+'_Type')
-		i = 0
-		with sql.connect('CoatsDB') as con:
-			cur = con.cursor()
-			while(i < int(amount)):
-				cur.execute("""
-					insert into %s (%s)
-					values (?);
-				""" % (name+'_Inventory', item_type), (type,))
-				i += 1
-		con.close()
-
-
-#Remove Items from the database
-def Remove_Item(name, type='', size=''):
-	#Check which item is being added and set variables for the sql query
-	if name in ['Boots','Coats','Gloves']:
-		item_type = name+'_Type'
-		item_size = name+'_Size'
-		with sql.connect('CoatsDB') as con:
-			cur = con.cursor()
-			cur.execute("""
-				delete from %s
-				where %s = (?) and %s = (?);
-			""" % (name, item_type, item_size), (type, size))
-		con.close()
-	elif name in ['Socks','Hats']:
-		item_type = name+'_Type'
-		with sql.connect('CoatsDB') as con:
-			cur = con.cursor()
-			cur.execute("""
-				delete from %s
-				where %s = (?);
-			""" % (name, item_type), (type,))
-		con.close()
-
+## Schools Window ##
 def Remove_School(school):
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
@@ -123,6 +133,24 @@ def Remove_School(school):
 		""", (school,))
 	con.close()
 
+def Add_School(school):
+	if school != '':
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			#cur.execute("insert into Schools (School_Name) values ('test');")
+			cur.execute('select School_Name from Schools where School_Name = (?);', (school,))
+			if cur.fetchall() == []:
+				cur.execute("""
+					insert into Schools (School_Name)
+					values(?);
+				""", (school,))
+			else:
+				return 'school exists'
+		con.close()
+	else:
+		return 'empty'
+
+## Queries to update comboboxes ##
 
 def Grab_Schools():
 	with sql.connect('CoatsDB') as con:
@@ -132,7 +160,7 @@ def Grab_Schools():
 		return schools
 	con.close()
 
-#Grab all values from type column
+#Grab all unique values from type column
 def Grab_Item_Types(name):
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
