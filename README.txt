@@ -21,4 +21,4 @@ sudo add-apt-repository ppa:deadsnakes/ppa
 (ttk and pil)
 sudo add-apt-repository ppa:j-4321-i/ttkwidgets
 sudo apt-get update
-sudo apt-get install python(3)-ttkwidgets
+sudo apt-get install python3-ttkwidgets
