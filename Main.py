@@ -38,6 +38,24 @@ class Application(Tk):
 		self.Clear_Combobox(name, type, size)
 		self.Clear_Entry_box(amount)
 
+	#View inventory window
+	def Btn_View_Inventory(self, item):
+		self.View_Item_Selected['text'] = 'Item: ' + item
+		self.View_Total['text'] = 'Total:',Queries.Total_Item_Count(item)
+
+		subitems = Queries.Total_Subitems_Count(item)
+		#If after implementing the below I am getting unwanted characters
+		#https://stackoverflow.com/questions/3939361/remove-specific-characters-from-a-string-in-python
+		#Pass subitems a dictionary of 'Subitem : Amount'
+		#Insert into entry box
+		for i in range(len(subitems)):
+			self.View_Subitems.insert(END, str(subitems[i]).translate(None, "''(),")+'\n')
+
+
+
+		#Label(self.Center_Frame, text='str(each)', font=("Arial",20), pady=5, bg='#f5f1f2').place(relx=.3+i, rely=.36,anchor= CENTER)
+
+
 
 	#School menubar window
 	def Btn_Submit_School(self, school):
@@ -45,7 +63,7 @@ class Application(Tk):
 			case 'school exists':
 				self.Notification_Window(text='This School has already been \nadded to the database!')
 			case 'empty':
-				self.Notification_Window(text='You must enter a school name \nto beadded to the database!')
+				self.Notification_Window(text='You must enter a school name \nto be added to the database!')
 		self.Clear_Entry_box(school)
 		self.Remove_School_Combobox['values'] = (Queries.Grab_Schools())
 
@@ -397,37 +415,41 @@ class Application(Tk):
 			#Create View Inventory Window
 			self.Configure_Window_Defaults(title='View Inventory')
 
+
 			#~~~ Add Widets ~~~
 			#Create Labels
 			Title_Image = Label(self.Top_Frame, image=self.Title_Image, font=("Arial",60), pady=5, bg='#f1f5f4')
 			Title_Image.pack(fill=X, pady=12)
 
-			Title_Description = Label(self.Top_Frame, text='View Inventory',  font=("Arial",20), bg='#f1f5f4')
-			Title_Description.pack(fill=X)
+			Title_Desc = Label(self.Top_Frame, text='View Inventory',  font=("Arial",20), bg='#f1f5f4')
+			Title_Desc.pack(fill=X)
 
-			Select_lbl = Label(self.Center_Frame, text='Search Item', font=("Arial",20), pady=5, bg='#f5f1f2')
-			Select_lbl.place(relx=.5, rely=.12,anchor= CENTER)
+			Search_Item = Label(self.Center_Frame, text='Search Item', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Search_Item.place(relx=.5, rely=.12,anchor= CENTER)
 
-			Main_Item_lbl = Label(self.Center_Frame, text='Item: ITEM', font=("Arial",20), pady=5, bg='#f5f1f2')
-			Main_Item_lbl.place(relx=.46, rely=.36,anchor= CENTER)
+			self.View_Item_Selected = Label(self.Center_Frame, text='', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Item_Selected.place(relx=.42, rely=.36, anchor= CENTER)
 
-			Main_Total_lbl = Label(self.Center_Frame, text='Total: ', font=("Arial",20), pady=5, bg='#f5f1f2')
-			Main_Total_lbl.place(relx=.55, rely=.36,anchor= CENTER)
+			self.View_Total = Label(self.Center_Frame, text='', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Total.place(relx=.585, rely=.36,anchor= CENTER)
 
-			Seperator_lbl = Label(self.Center_Frame, text=self.Underscore(35),  font=("Arial",15), bg='#f5f1f2')
-			Seperator_lbl.place(relx=.35, rely=.4)
+			self.View_Subitems = Text(self.Center_Frame, font=("Arial",20), bg='#f5f1f2', width=30, height=6)
+			self.View_Subitems.place(relx=.5, rely=.75,anchor= CENTER)
+
+			Separator = Label(self.Center_Frame, text=self.Underscore(35),  font=("Arial",15), bg='#f5f1f2')
+			Separator.place(relx=.35, rely=.4)
 
 			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
 			Copyright.pack(side=BOTTOM)
 
 			#Create Entry Boxes
-			Select_CB = Combobox(self.Center_Frame, text='Inventory Item', state='readonly', font=("Arial",14))
-			Select_CB['values'] = ('test','test2','test3','banana','banish','banner','banquet','ballot','ballet','ball','balance','barrell','baghdad','bunny','','','','','','','','','','','','','','','')
-			Select_CB.place(relx=.5, rely=.2,anchor= CENTER)
+			self.View_Select_Item_CB = Combobox(self.Center_Frame, text='Inventory Item', state='readonly', font=("Arial",14))
+			self.View_Select_Item_CB['values'] = ('Hats','Coats','Gloves','Boots','Socks')
+			self.View_Select_Item_CB.place(relx=.5, rely=.2,anchor= CENTER)
 
 			#Create buttons
-			Select_btn = Button(self.Center_Frame, text="Search", command='', padx=5, pady=5, font=("Arial", 14), bd=3)
-			Select_btn.place(relx=.62, rely=.2,anchor= CENTER)
+			Select = Button(self.Center_Frame, text="Search", font=("Arial", 14), command=lambda: self.Btn_View_Inventory(self.View_Select_Item_CB.get()), padx=5, pady=5, bd=3)
+			Select.place(relx=.625, rely=.2,anchor= CENTER)
 
 			Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 			Exit.bind("<Button-1>", self.Reset_Counter)
@@ -584,11 +606,6 @@ class Application(Tk):
 			Search = Label(self.Center_Frame, text='Search Records by Child Name', font=("Arial",20), pady=5, bg='#f5f1f2')
 			Search.place(relx=.5, rely=.12,anchor= CENTER)
 
-			# Main_Item_lbl = Label(self.Center_Frame, text='Item: ITEM', font=("Arial",20), pady=5, bg='#f5f1f2')
-			# Main_Item_lbl.place(relx=.46, rely=.36,anchor= CENTER)
-			#
-			# Main_Total_lbl = Label(self.Center_Frame, text='Total: ', font=("Arial",20), pady=5, bg='#f5f1f2')
-			# Main_Total_lbl.place(relx=.55, rely=.36,anchor= CENTER)
 
 			Underscore = Label(self.Center_Frame, text=self.Underscore(35),  font=("Arial",15), bg='#f5f1f2')
 			Underscore.place(relx=.35, rely=.4)

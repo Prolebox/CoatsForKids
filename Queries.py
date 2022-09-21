@@ -3,6 +3,32 @@
 #This file is for all the database queries needed to populate the application
 import sqlite3 as sql
 
+## View Inventory Window ##
+def Total_Item_Count(item):
+	values = item+'_Inventory'
+	with sql.connect('CoatsDB') as con:
+		cur = con.cursor()
+		cur.execute("""
+			select count(*) as count from %s;
+		""" % values)
+		return cur.fetchall()
+	con.close()
+
+#Return each subitem and the amount of that item
+def Total_Subitems_Count(item):
+	with sql.connect('CoatsDB') as con:
+		cur = con.cursor()
+		cur.execute("""
+			select distinct %s, %s
+			from %s;
+		""" % (item+'_Type', item+'_Size', item))
+		subitems = cur.fetchall()
+		#grab a count for each of these subitems in INVENTORY
+		#then create a dictionary of item : count to return
+
+
+	con.close()
+
 ## Remove Inventory Window ##
 def Remove_Inventory_Record(name, type, size='', amount=''):
 	if name in ['Boots','Coats','Gloves']:
@@ -29,7 +55,6 @@ def Remove_Inventory_Record(name, type, size='', amount=''):
 				""" % (name+'_Inventory', item_type), (type,))
 				i += 1
 		con.close()
-
 
 ## Add Inventory Window##
 def Add_Inventory_Record(name, type, size='', amount=''):
@@ -123,6 +148,7 @@ def Add_Item(name, type='', size=''):
 	else:
 		return 'empty'
 
+
 ## Schools Window ##
 def Remove_School(school):
 	with sql.connect('CoatsDB') as con:
@@ -150,17 +176,16 @@ def Add_School(school):
 	else:
 		return 'empty'
 
-## Queries to update comboboxes ##
 
+## Queries to update comboboxes ##
 def Grab_Schools():
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
 		cur.execute("select School_Name from Schools;")
-		schools = cur.fetchall()
-		return schools
+		return cur.fetchall()
 	con.close()
 
-#Grab all unique values from type column
+#Grab all unique values from type column, as the same type may have multiple sizes
 def Grab_Item_Types(name):
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
@@ -168,11 +193,9 @@ def Grab_Item_Types(name):
 			select distinct %s
 			from %s;
 		""" % (name+'_Type',name))
-		types = cur.fetchall()
-		return types
+		return cur.fetchall()
 	con.close()
 
-#Grab all unique values from size column
 def Grab_Item_Sizes(name, type):
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
@@ -180,6 +203,5 @@ def Grab_Item_Sizes(name, type):
 			select %s
 			from %s where %s = (?);
 		""" % (name+'_Size', name, name+'_Type'), (type,))
-		sizes = cur.fetchall()
-		return sizes
+		return cur.fetchall()
 	con.close()
