@@ -40,14 +40,15 @@ class Application(Tk):
 
 	#View inventory window
 	def Btn_View_Inventory(self, name):
+		#Enable text box to clear between searches, then to put data in
+		self.View_Subitems.config(state=NORMAL)
+		self.View_Subitems.delete('1.0', END)
+
 		self.View_Item_Selected['text'] = 'Item: ' + name
 		self.View_Total['text'] = 'Total:',Queries.Total_Item_Count(name)
 
 		#Grab dictionary of subitem : count
 		subitems = Queries.Total_Subitems_Count(name)
-
-		#Enable text widget before entering values
-		self.View_Subitems.config(state=NORMAL)
 
 		if name in ['Boots','Coats','Gloves']:
 			#Display subitem : count

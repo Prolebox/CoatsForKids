@@ -87,8 +87,9 @@ def Remove_Inventory_Record(name, type, size='', amount=''):
 			cur = con.cursor()
 			cur.execute("""
 					delete from %s
-					where %s = (?);
-			""" % (table_name, item_type), (type,))
+					where %s = (?)
+					limit ?;
+			""" % (table_name, item_type), (type, amount))
 		con.close()
 
 ## Add Inventory Window##
@@ -96,7 +97,6 @@ def Add_Inventory_Record(name, type, size='', amount=''):
 	item_type = name+'_Type'
 	item_size = name+'_Size'
 	table_name = name+'_Inventory'
-	values = (name+'_Type',name+'_Size')
 	i = 0
 
 	if name in ['Boots','Coats','Gloves']:
@@ -104,9 +104,9 @@ def Add_Inventory_Record(name, type, size='', amount=''):
 			cur = con.cursor()
 			while(i < int(amount)):
 				cur.execute("""
-					insert into %s %s
+					insert into %s (%s, %s)
 					values (?,?);
-				""" % (table_name, values), (type, size))
+				""" % (table_name, item_type, item_size), (type, size))
 				i += 1
 		con.close()
 
@@ -156,7 +156,7 @@ def Add_Item(name, type='', size=''):
 			cur.execute('select %s, %s from %s where %s = (?) and %s = (?);' % (item_type, item_size, name, item_type, item_size), (type, size))
 			if cur.fetchall() == []:
 				cur.execute("""
-					insert into %s %s
+					insert into %s (%s, %s)
 					values (?,?);
 				""" % (name, item_type, item_size), (type, size))
 			else:
