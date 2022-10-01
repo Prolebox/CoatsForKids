@@ -18,13 +18,12 @@ def Total_Item_Count(item):
 def Total_Subitems_Count(name):
 	#Dictionary to be returned containing item : count
 	items_with_count = {}
+	item_type = name+'_Type'
+	item_size = name+'_Size'
+	table_name = name+'_Inventory'
 
 	with sql.connect('CoatsDB') as con:
 		if name in ['Boots','Coats','Gloves']:
-			item_type = name+'_Type'
-			item_size = name+'_Size'
-			table_name = name+'_Inventory'
-
 			cur = con.cursor()
 			cur.execute("""
 				select distinct %s, %s
@@ -36,8 +35,6 @@ def Total_Subitems_Count(name):
 			#Grab the inventory count for each subitem
 			for i in range(len(subitems)):
 				type, size = subitems[i]
-
-
 				cur.execute("""
 					select %s, %s
 					from %s
@@ -48,9 +45,6 @@ def Total_Subitems_Count(name):
 				items_with_count[type,size] = subitem_count
 
 		elif name in ['Socks','Hats']:
-			item_type = name+'_Type'
-			table_name = name+'_Inventory'
-
 			cur = con.cursor()
 			cur.execute("""
 				select distinct %s
@@ -74,47 +68,38 @@ def Total_Subitems_Count(name):
 
 ## Remove Inventory Window ##
 def Remove_Inventory_Record(name, type, size='', amount=''):
-	if name in ['Boots','Coats','Gloves']:
-		item_type = name+'_Type'
-		item_size = name+'_Size'
-		values = (name+'_Type',name+'_Size')
-		table_name = name+'_Inventory'
-		#i = 0
+	item_type = name+'_Type'
+	item_size = name+'_Size'
+	table_name = name+'_Inventory'
 
+	if name in ['Boots','Coats','Gloves']:
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
-			#while(i < int(amount)):
 			cur.execute("""
 				delete from %s
-				where %s = (?) and %s = (?);
-			""" % (table_name, item_type, item_size), (type, size))
-				#i += 1
+				where %s = (?) and %s = (?)
+				limit ?;
+			""" % (table_name, item_type, item_size), (type, size, amount))
 		con.close()
-	elif name in ['Socks','Hats'] and type != '':
-		item_type = name+'_Type'
-		table_name = name+'_Inventory'
-		i = 0
 
+	elif name in ['Socks','Hats'] and type != '':
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
-			while(i < int(amount)):
-				cur.execute("""
-						delete from %s
-						where %s = (?);
-				""" % (table_name, item_type), (type,))
-				i += 1
+			cur.execute("""
+					delete from %s
+					where %s = (?);
+			""" % (table_name, item_type), (type,))
 		con.close()
 
 ## Add Inventory Window##
 def Add_Inventory_Record(name, type, size='', amount=''):
-	#print(name, type, size, amount)
-	if name in ['Boots','Coats','Gloves']:
-		item_type = name+'_Type'
-		item_size = name+'_Size'
-		table_name = name+'_Inventory'
-		values = (name+'_Type',name+'_Size')
-		i = 0
+	item_type = name+'_Type'
+	item_size = name+'_Size'
+	table_name = name+'_Inventory'
+	values = (name+'_Type',name+'_Size')
+	i = 0
 
+	if name in ['Boots','Coats','Gloves']:
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
 			while(i < int(amount)):
@@ -124,11 +109,8 @@ def Add_Inventory_Record(name, type, size='', amount=''):
 				""" % (table_name, values), (type, size))
 				i += 1
 		con.close()
-	elif name in ['Socks','Hats'] and type != '':
-		item_type = name+'_Type'
-		table_name = name+'_Inventory'
-		i = 0
 
+	elif name in ['Socks','Hats'] and type != '':
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
 			while(i < int(amount)):
@@ -142,11 +124,10 @@ def Add_Inventory_Record(name, type, size='', amount=''):
 
 ## Items Window ##
 def Remove_Item(name, type='', size=''):
+	item_type = name+'_Type'
+	item_size = name+'_Size'
 	#Check which item is being added and set variables for the sql query
 	if name in ['Boots','Coats','Gloves']:
-		item_type = name+'_Type'
-		item_size = name+'_Size'
-
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
 			cur.execute("""
@@ -155,8 +136,6 @@ def Remove_Item(name, type='', size=''):
 			""" % (name, item_type, item_size), (type, size))
 		con.close()
 	elif name in ['Socks','Hats']:
-		item_type = name+'_Type'
-
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
 			cur.execute("""
@@ -166,12 +145,10 @@ def Remove_Item(name, type='', size=''):
 		con.close()
 
 def Add_Item(name, type='', size=''):
+	item_type = name+'_Type'
+	item_size = name+'_Size'
 	#Check which item is being added and set variables for the sql query
 	if name in ['Boots','Coats','Gloves'] and type and size != '':
-		item_type = name+'_Type'
-		item_size = name+'_Size'
-		values = (name+'_Type',name+'_Size')
-
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
 			#Using %s substitution because table and column names cannot be parameterized
@@ -181,15 +158,13 @@ def Add_Item(name, type='', size=''):
 				cur.execute("""
 					insert into %s %s
 					values (?,?);
-				""" % (name, values), (type, size))
+				""" % (name, item_type, item_size), (type, size))
 			else:
 				return 'item exists'
 		con.close()
 	#Separate because no size column in these tables
 	#type must be passed as a tuple
 	elif name in ['Socks','Hats'] and type != '':
-		item_type = (name+'_Type')
-
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
 			cur.execute('select %s from %s where %s = (?);' % (item_type, name, item_type), (type,))
@@ -244,9 +219,9 @@ def Grab_Schools():
 
 #Grab all unique values from type column, as the same type may have multiple sizes
 def Grab_Item_Types(name):
-	with sql.connect('CoatsDB') as con:
-		item_type = name+'_Type'
+	item_type = name+'_Type'
 
+	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
 		cur.execute("""
 			select distinct %s
@@ -256,10 +231,10 @@ def Grab_Item_Types(name):
 	con.close()
 
 def Grab_Item_Sizes(name, type):
-	with sql.connect('CoatsDB') as con:
-		item_type = name+'_Type'
-		item_size = name+'_Size'
+	item_type = name+'_Type'
+	item_size = name+'_Size'
 
+	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
 		cur.execute("""
 			select %s
