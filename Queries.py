@@ -22,11 +22,21 @@ def Total_Subitems_Count(item):
 			select distinct %s, %s
 			from %s;
 		""" % (item+'_Type', item+'_Size', item))
+
 		subitems = cur.fetchall()
-		#grab a count for each of these subitems in INVENTORY
-		#then create a dictionary of item : count to return
+		items_with_count = {}
 
-
+		#Grab the inventory count for each subitem
+		for i in range(len(subitems)):
+			type, size = subitems[i]
+			cur.execute("""
+				select %s, %s
+				from %s
+				where %s = (?) and %s = (?);
+			""" % (item+'_Type', item+'_Size', item+'_Inventory', item+'_Type', item+'_Size'), (type, size))
+			subitem_count = len(cur.fetchall())
+			items_with_count[type,size] = subitem_count
+		return items_with_count
 	con.close()
 
 ## Remove Inventory Window ##
