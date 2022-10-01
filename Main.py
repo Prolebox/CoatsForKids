@@ -39,21 +39,26 @@ class Application(Tk):
 		self.Clear_Entry_box(amount)
 
 	#View inventory window
-	def Btn_View_Inventory(self, item):
-		self.View_Item_Selected['text'] = 'Item: ' + item
-		self.View_Total['text'] = 'Total:',Queries.Total_Item_Count(item)
+	def Btn_View_Inventory(self, name):
+		self.View_Item_Selected['text'] = 'Item: ' + name
+		self.View_Total['text'] = 'Total:',Queries.Total_Item_Count(name)
 
-		subitems = Queries.Total_Subitems_Count(item)
-		#If after implementing the below I am getting unwanted characters
-		#https://stackoverflow.com/questions/3939361/remove-specific-characters-from-a-string-in-python
-		#Pass subitems a dictionary of 'Subitem : Amount'
-		#Insert into entry box
-		for i in range(len(subitems)):
-			self.View_Subitems.insert(END, str(subitems[i]).translate(None, "''(),")+'\n')
+		#Grab dictionary of subitem : count
+		subitems = Queries.Total_Subitems_Count(name)
 
+		#Enable text widget before entering values
+		self.View_Subitems.config(state=NORMAL)
 
+		if name in ['Boots','Coats','Gloves']:
+			#Display subitem : count
+			for type, size in subitems:
+				self.View_Subitems.insert(END, type +', '+ size +': '+ str(subitems[type, size])+'\n')
+		elif name in ['Socks','Hats']:
+			for type in subitems:
+				self.View_Subitems.insert(END, str(type).lstrip("('").rstrip("',)") +': '+ str(subitems[type])+'\n')
 
-		#Label(self.Center_Frame, text='str(each)', font=("Arial",20), pady=5, bg='#f5f1f2').place(relx=.3+i, rely=.36,anchor= CENTER)
+		#Disable text widget so you cannot type
+		self.View_Subitems.config(state=DISABLED)
 
 
 
