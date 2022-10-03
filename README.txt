@@ -13,12 +13,13 @@ python3.10
 pip3 install ttkwidgets
 pip3 install pillow
 
-or if installing python3 with apt
+or if installing python3.10 with apt
 
-(python3)
+(python3.10)
 sudo apt install software-properties-common -y
 sudo add-apt-repository ppa:deadsnakes/ppa
-(ttk and pil)
+
+(ttkwidgets)
 sudo add-apt-repository ppa:j-4321-i/ttkwidgets
 sudo apt-get update
 sudo apt-get install python3-ttkwidgets
