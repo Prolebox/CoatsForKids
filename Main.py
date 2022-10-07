@@ -16,6 +16,7 @@ class Application(Tk):
 
 		self.Main_Window()
 		self.config(menu=self.menubar)
+		#Keeps application running
 		self.mainloop()
 
 	#To be used as seperator between labels
@@ -106,13 +107,16 @@ class Application(Tk):
 			#Set because comboboxes are populated with strings
 			each.set('')
 
-	#Configure the defaults for child windows of the menu screen
+	#Configure the defaults for child windows of the main window
 	def Configure_Window_Defaults(self, window_name='', title='', geometry='1280x720'):
+			#Create new window on top of the Main window
 			self.Window = Toplevel(self)
 			self.Window.title(title)
 			self.Window.geometry(geometry)
+			#Disallows resizing the window
 			self.Window.resizable(0,0)
 
+			#Divides window into 3 rows
 			self.Top_Frame = Frame(self.Window, bg='#f1f5f4', relief='groove', bd=3)
 			self.Center_Frame = Frame(self.Window, bg='#f5f1f2')
 			self.Bottom_Frame = Frame(self.Window, bg='#f5f1f2')
@@ -278,7 +282,6 @@ class Application(Tk):
 		Child_Underscore.place(relx=.5, rely=.38,anchor= CENTER)
 
 		#Create buttons
-
 		Add_Inventory = Button(Center_Left_Frame, text="Add Inventory", command=self.Add_Inventory_Window, font=("Arial",20), bd=3)
 		Add_Inventory.place(relx=.5, rely=.5,anchor= CENTER, height=55, width=250)
 
@@ -292,7 +295,11 @@ class Application(Tk):
 		Lookup_Record.place(relx=.5, rely=.5,anchor= CENTER, height=55, width=250)
 
 		Add_Record = Button(Center_Right_Frame, text="View record", command=self.View_Record_Window, font=("Arial",20), bd=3)
-		Add_Record.place(relx=.5, rely=.62,anchor= CENTER, height=55, width=250)
+		Add_Record.place(relx=.5, rely=.74,anchor= CENTER, height=55, width=250)
+
+		Remove_Record = Button(Center_Right_Frame, text="Remove record", command=self.Remove_Record_Window, font=("Arial",20), bd=3)
+		Remove_Record.place(relx=.5, rely=.62,anchor= CENTER, height=55, width=250)
+
 
 
 	def Remove_Inventory_Window(self):
@@ -462,6 +469,18 @@ class Application(Tk):
 			Exit.pack(pady=15, padx=45, side=LEFT)
 
 
+	def Remove_Record_Window(self):
+		if self.counter <1:
+			self.counter += 1
+
+			self.Configure_Window_Defaults(title='Delete Record')
+
+			#~~~ Add Widgets~~~
+			#Create Labels
+
+			Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
+			Exit.bind("<Button-1>", self.Reset_Counter)
+			Exit.pack(pady=15, padx=45, side=LEFT)
 
 	def Add_Record_Window(self):
 		if self.counter < 1:
@@ -568,22 +587,27 @@ class Application(Tk):
 			Gender_Combobox.place(relx=.63, rely=.19,anchor= CENTER, width='65')
 
 			School_Combobox = Combobox(self.Center_Frame, text='Select School', state='readonly')
-			School_Combobox['values'] = ('')
+			School_Combobox['values'] = Queries.Grab_Schools()
 			School_Combobox.place(relx=.72, rely=.19,anchor= CENTER, width='100')
 
 			Hat_Combobox = Combobox(self.Center_Frame, text='Select Hat', state='readonly')
+			Hat_Combobox['values'] = Queries.Populate_Add_Record_CBs('Hats')
 			Hat_Combobox.place(relx=.33, rely=.61,anchor= CENTER)
 
 			Coat_Combobox = Combobox(self.Center_Frame, text='Select Coat', state='readonly')
+			Coat_Combobox['values'] = Queries.Populate_Add_Record_CBs('Coats')
 			Coat_Combobox.place(relx=.50, rely=.61,anchor= CENTER)
 
 			Gloves_Combobox = Combobox(self.Center_Frame, text='Select Gloves', state='readonly')
+			Gloves_Combobox['values'] = Queries.Populate_Add_Record_CBs('Gloves')
 			Gloves_Combobox.place(relx=.66, rely=.61,anchor= CENTER)
 
 			Socks_Combobox = Combobox(self.Center_Frame, text='Select Socks', state='readonly')
+			Socks_Combobox['values'] = Queries.Populate_Add_Record_CBs('Socks')
 			Socks_Combobox.place(relx=.4, rely=.8,anchor= CENTER)
 
 			Boots_Combobox = Combobox(self.Center_Frame, text='Select Boots', state='readonly')
+			Boots_Combobox['values'] = Queries.Populate_Add_Record_CBs('Boots')
 			Boots_Combobox.place(relx=.6, rely=.8,anchor= CENTER)
 
 
@@ -592,7 +616,7 @@ class Application(Tk):
 			Exit.bind("<Button-1>", self.Reset_Counter)
 			Exit.pack(pady=15, padx=45, side=LEFT)
 
-			Submit = Button(self.Center_Frame, text="Submit Record", font=("Arial",15), command='', bd=3)
+			Submit = Button(self.Center_Frame, text="Submit Record", font=("Arial",15), command=lambda:Queries.Grab_Inventory('Coats'), bd=3)
 			Submit.place(relx=.5,rely=.93,anchor=CENTER)
 
 	def View_Record_Window(self):

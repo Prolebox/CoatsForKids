@@ -220,16 +220,19 @@ def Grab_Schools():
 #Grab all unique values from type column, as the same type may have multiple sizes
 def Grab_Item_Types(name):
 	item_type = name+'_Type'
+	table = name+'_Inventory'
 
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
 		cur.execute("""
 			select distinct %s
 			from %s;
-		""" % (item_type,name))
-		return cur.fetchall()
+		""" % (item_type, table))
+		types = cur.fetchall()
+		return types
 	con.close()
 
+#Grab item size based upon preselected type
 def Grab_Item_Sizes(name, type):
 	item_type = name+'_Type'
 	item_size = name+'_Size'
@@ -242,3 +245,46 @@ def Grab_Item_Sizes(name, type):
 		""" % (item_size, name, item_type), (type,))
 		return cur.fetchall()
 	con.close()
+
+#Used to populate comboboxes on Add Record window
+def Populate_Add_Record_CBs(name):
+	table_name = name+'_Inventory'
+	item_type = name+'_Type'
+	item_size = name+'_Size'
+
+	if name in ['Boots','Coats','Gloves']:
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				select distinct %s, %s
+				from %s;
+			""" % (item_type, item_size, table_name))
+
+			#Grab distinct items added to inventory table to then merge into one string
+			subitems = cur.fetchall()
+			inventory = []
+
+			#Merge the type and size into one string
+			for i in range(len(subitems)):
+				type, size = subitems[i]
+				inventory.append(type+', '+size)
+			return inventory
+
+
+	elif name in ['Socks','Hats']:
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				select distinct %s
+				from %s;
+			""" % (item_type, table_name))
+
+			#Grab distinct items added to inventory table to then merge into one string
+			subitems = cur.fetchall()
+			inventory = []
+
+			#Merge the type and size into one string
+			for i in range(len(subitems)):
+				type = subitems[i]
+				inventory.append(type)
+			return inventory
