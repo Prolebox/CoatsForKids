@@ -1,0 +1,27 @@
+#### Test DB values through python3 interactive session ####
+
+# Navigate to the directory containing the database.
+import sqlite3 as sql
+con = sql.connect('CoatsDB')
+cur = con.cursor()
+cur.execute('[Query];')
+cur.fetchall()
+
+
+- cur.execute('select * from Hat;')
+- cur.execute("insert into Hat (Hat_Type) values ('Female');")
+- cur.execute("delete from Hat where (Hat_Type) =  ('Test')")
+
+# Must pass values using question marks.
+# https://docs.python.org/2/library/sqlite3.html#sqlite3.Cursor.execute
+# Cannot pass table of column names this way; Will receive syntax error.
+
+name = Coats
+item_type = Coats_Type
+item_size = Coats_Size
+type = Girls
+size = Small
+cur.execute("""
+  insert into %s (%s, %s)
+  values (?,?);
+""" % (name, item_type, item_size), (type, size))
