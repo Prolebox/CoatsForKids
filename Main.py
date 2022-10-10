@@ -90,6 +90,15 @@ class Application(Tk):
 			self.Notification_Window(text='Please enter a value \nin every field!')
 		self.Clear_Entry_box(type, size)
 
+	#Add Record Window
+	def Btn_Submit_Record(self):
+		information = (Child_First_Entry.get(), Child_Last_Entry.get(), Child_Age_Entry.get(), Gender_Combobox.get(), School_Combobox.get(),
+					Parent_First_Entry.get(), Parent_Last_Entry.get(), Phone_Entry.get(), Street_Entry.get(), City_Entry.get(), Zip_Entry.get())
+		donations = (Hat_Combobox.get(), Coat_Combobox.get(), Gloves_Combobox.get(), Socks_Combobox.get(), Boots_Combobox.get())
+		print(information,'\n',donations)
+
+
+
 	#Add/Remove Item window
 	def Btn_Remove_Item(self, name, type, size):
 		Queries.Remove_Item(name.get(),type.get(),size.get())
@@ -616,7 +625,8 @@ class Application(Tk):
 			Exit.bind("<Button-1>", self.Reset_Counter)
 			Exit.pack(pady=15, padx=45, side=LEFT)
 
-			Submit = Button(self.Center_Frame, text="Submit Record", font=("Arial",15), command=lambda:Queries.Grab_Inventory('Coats'), bd=3)
+
+			Submit = Button(self.Center_Frame, text="Submit Record", font=("Arial",15), command=lambda:self.Btn_Submit_Record(), bd=3)
 			Submit.place(relx=.5,rely=.93,anchor=CENTER)
 
 	def View_Record_Window(self):

@@ -3,7 +3,7 @@
 #This file is for all the database queries needed to populate the application
 import sqlite3 as sql
 
-## View Inventory Window ##
+###################### View Inventory Window ######################
 def Total_Item_Count(item):
 	values = item+'_Inventory'
 	with sql.connect('CoatsDB') as con:
@@ -14,7 +14,7 @@ def Total_Item_Count(item):
 		return cur.fetchall()
 	con.close()
 
-#Return each subitem and the amount of that item
+###################### Return each subitem and the amount of that item ######################
 def Total_Subitems_Count(name):
 	#Dictionary to be returned containing item : count
 	items_with_count = {}
@@ -66,7 +66,7 @@ def Total_Subitems_Count(name):
 		return items_with_count
 	con.close()
 
-## Remove Inventory Window ##
+###################### Remove Inventory Window ######################
 def Remove_Inventory_Record(name, type, size='', amount=''):
 	item_type = name+'_Type'
 	item_size = name+'_Size'
@@ -92,7 +92,7 @@ def Remove_Inventory_Record(name, type, size='', amount=''):
 			""" % (table_name, item_type), (type, amount))
 		con.close()
 
-## Add Inventory Window##
+###################### Add Inventory Window ######################
 def Add_Inventory_Record(name, type, size='', amount=''):
 	item_type = name+'_Type'
 	item_size = name+'_Size'
@@ -121,8 +121,7 @@ def Add_Inventory_Record(name, type, size='', amount=''):
 				i += 1
 		con.close()
 
-
-## Items Window ##
+###################### Items Window ######################
 def Remove_Item(name, type='', size=''):
 	item_type = name+'_Type'
 	item_size = name+'_Size'
@@ -151,7 +150,6 @@ def Add_Item(name, type='', size=''):
 	if name in ['Boots','Coats','Gloves'] and type and size != '':
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
-			#Using %s substitution because table and column names cannot be parameterized
 			#Check if the item exists, if not add it to the database
 			cur.execute('select %s, %s from %s where %s = (?) and %s = (?);' % (item_type, item_size, name, item_type, item_size), (type, size))
 			if cur.fetchall() == []:
@@ -180,8 +178,7 @@ def Add_Item(name, type='', size=''):
 	else:
 		return 'empty'
 
-
-## Schools Window ##
+###################### Schools Window ######################
 def Remove_School(school):
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
@@ -208,8 +205,15 @@ def Add_School(school):
 	else:
 		return 'empty'
 
+###################### Add Record Window ######################
+def Add_Record(*args):
+	#Child First, Last, Age, Gender School
+	#Parent First, Last, Phone, Street, City Zip
+	#Hat, Coat, Gloves, Socks, Boots
+	print(*args)
 
-## Queries to update comboboxes ##
+
+###################### Queries to update comboboxes #######################
 def Grab_Schools():
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
@@ -260,15 +264,16 @@ def Populate_Add_Record_CBs(name):
 				from %s;
 			""" % (item_type, item_size, table_name))
 
-			#Grab distinct items added to inventory table to then merge into one string
+			#concat type and size into 1 string bc comboboxes take 1 string per entry listing
+			combobox_values = []
+
 			subitems = cur.fetchall()
-			inventory = []
 
 			#Merge the type and size into one string
 			for i in range(len(subitems)):
 				type, size = subitems[i]
-				inventory.append(type+', '+size)
-			return inventory
+				combobox_values.append(type+', '+size)
+			return combobox_values
 
 
 	elif name in ['Socks','Hats']:
@@ -279,12 +284,13 @@ def Populate_Add_Record_CBs(name):
 				from %s;
 			""" % (item_type, table_name))
 
-			#Grab distinct items added to inventory table to then merge into one string
+			#concat type and size into 1 string bc comboboxes take 1 string per entry listing
+			combobox_values = []
+
 			subitems = cur.fetchall()
-			inventory = []
 
 			#Merge the type and size into one string
 			for i in range(len(subitems)):
 				type = subitems[i]
-				inventory.append(type)
-			return inventory
+				combobox_values.append(type)
+			return combobox_values
