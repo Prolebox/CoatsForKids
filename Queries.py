@@ -192,7 +192,7 @@ def Add_School(school):
 	if school != '':
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
-			#cur.execute("insert into Schools (School_Name) values ('test');")
+
 			cur.execute('select School_Name from Schools where School_Name = (?);', (school,))
 			if cur.fetchall() == []:
 				cur.execute("""
@@ -206,13 +206,28 @@ def Add_School(school):
 		return 'empty'
 
 ###################### Add Record Window ######################
-def Add_Record(*args):
-	#Child First, Last, Age, Gender School
-	#Parent First, Last, Phone, Street, City Zip
-	#Hat, Coat, Gloves, Socks, Boots
-	print(*args)
+def Add_Record(CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street, City, Zip, Hat, Coat, Gloves, Socks, Boots):
+	#Combine entry boxes to test for empty values
+	required_info = (CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street, City, Zip)
+	#Initial item list containing potentially empty values
+	initial_items = [Hat, Coat, Gloves, Socks, Boots]
+	#Items list after empty items cut out
+	cut_items = []
 
+	for each in initial_items:
+		if each != '':
+			cut_items.append(each)
 
+	if '' in required_info:
+		return 'empty'
+	else:
+		#Remove empty items
+		print(cut_items)
+		#with sql.connect('CoatsDB') as con:
+		#	cur = con.cursor()
+		#	cur.execute("""
+#
+#			""")
 ###################### Queries to update comboboxes #######################
 def Grab_Schools():
 	with sql.connect('CoatsDB') as con:

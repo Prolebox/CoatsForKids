@@ -91,11 +91,16 @@ class Application(Tk):
 		self.Clear_Entry_box(type, size)
 
 	#Add Record Window
-	def Btn_Submit_Record(self):
-		information = (Child_First_Entry.get(), Child_Last_Entry.get(), Child_Age_Entry.get(), Gender_Combobox.get(), School_Combobox.get(),
-					Parent_First_Entry.get(), Parent_Last_Entry.get(), Phone_Entry.get(), Street_Entry.get(), City_Entry.get(), Zip_Entry.get())
-		donations = (Hat_Combobox.get(), Coat_Combobox.get(), Gloves_Combobox.get(), Socks_Combobox.get(), Boots_Combobox.get())
-		print(information,'\n',donations)
+	def Btn_Submit_Record(self, CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street, City, Zip, Hat, Coat, Gloves, Socks, Boots):
+		#Submit record
+		if Queries.Add_Record(CFirst.get(), CLast.get(), CAge.get(), Gender.get(), School.get(), PFirst.get(), PLast.get(), Phone.get(), Street.get(), City.get(), Zip.get(), Hat.get(), Coat.get(), Gloves.get(), Socks.get(), Boots.get()) == 'empty':
+			self.Notification_Window(text='Please enter a value \nin every entry box!')
+
+		self.Clear_Entry_box(CFirst, CLast, CAge, PFirst, PLast, Phone, Street, City, Zip)
+		self.Clear_Combobox(Gender, School, Hat, Coat, Gloves, Socks, Boots)
+
+
+
 
 
 
@@ -562,62 +567,62 @@ class Application(Tk):
 
 			#Create Entry Widgets
 			#Child Entry Widgets
-			Child_First_Entry = Entry(self.Center_Frame, font=("Arial",13))
-			Child_First_Entry.place(relx=.24, rely=.19,anchor= CENTER)
+			self.Child_First_Entry = Entry(self.Center_Frame, font=("Arial",13))
+			self.Child_First_Entry.place(relx=.24, rely=.19,anchor= CENTER)
 
-			Child_Last_Entry = Entry(self.Center_Frame, font=("Arial",13))
-			Child_Last_Entry.place(relx=.42, rely=.19,anchor= CENTER)
+			self.Child_Last_Entry = Entry(self.Center_Frame, font=("Arial",13))
+			self.Child_Last_Entry.place(relx=.42, rely=.19,anchor= CENTER)
 
-			Child_Age_Entry = Entry(self.Center_Frame, font=("Arial",13))
-			Child_Age_Entry.place(relx=.55, rely=.19,anchor= CENTER, width='50')
+			self.Child_Age_Entry = Entry(self.Center_Frame, font=("Arial",13))
+			self.Child_Age_Entry.place(relx=.55, rely=.19,anchor= CENTER, width='50')
 
-			Parent_First_Entry = Entry(self.Center_Frame, font=("Arial",13))
-			Parent_First_Entry.place(relx=.14, rely=.39,anchor= CENTER)
+			self.Parent_First_Entry = Entry(self.Center_Frame, font=("Arial",13))
+			self.Parent_First_Entry.place(relx=.14, rely=.39,anchor= CENTER)
 
-			Parent_Last_Entry = Entry(self.Center_Frame, font=("Arial",13))
-			Parent_Last_Entry.place(relx=.31, rely=.39,anchor= CENTER)
+			self.Parent_Last_Entry = Entry(self.Center_Frame, font=("Arial",13))
+			self.Parent_Last_Entry.place(relx=.31, rely=.39,anchor= CENTER)
 
-			Phone_Entry = Entry(self.Center_Frame, font=("Arial",13))
-			Phone_Entry.place(relx=.48, rely=.39,anchor= CENTER)
+			self.Phone_Entry = Entry(self.Center_Frame, font=("Arial",13))
+			self.Phone_Entry.place(relx=.48, rely=.39,anchor= CENTER)
 
-			Street_Entry = Entry(self.Center_Frame, font=("Arial",13))
-			Street_Entry.place(relx=.65, rely=.39,anchor= CENTER)
+			self.Street_Entry = Entry(self.Center_Frame, font=("Arial",13))
+			self.Street_Entry.place(relx=.65, rely=.39,anchor= CENTER)
 
-			City_Entry = Entry(self.Center_Frame, font=("Arial",13))
-			City_Entry.place(relx=.8, rely=.39,anchor= CENTER, width='150')
+			self.City_Entry = Entry(self.Center_Frame, font=("Arial",13))
+			self.City_Entry.place(relx=.8, rely=.39,anchor= CENTER, width='150')
 
-			Zip_Entry = Entry(self.Center_Frame, font=("Arial",13))
-			Zip_Entry.place(relx=.9, rely=.39,anchor= CENTER, width='75')
+			self.Zip_Entry = Entry(self.Center_Frame, font=("Arial",13))
+			self.Zip_Entry.place(relx=.9, rely=.39,anchor= CENTER, width='75')
 
 			#Create Combobox Widgets
 			#User input is required to fill values for all but gender combobox
-			Gender_Combobox = Combobox(self.Center_Frame, text='Select Gender', state='readonly')
-			Gender_Combobox['values'] = ('Male','Female','Other')
-			Gender_Combobox.place(relx=.63, rely=.19,anchor= CENTER, width='65')
+			self.Gender_Combobox = Combobox(self.Center_Frame, text='Select Gender', state='readonly')
+			self.Gender_Combobox['values'] = ('Male','Female','Other')
+			self.Gender_Combobox.place(relx=.63, rely=.19,anchor= CENTER, width='65')
 
-			School_Combobox = Combobox(self.Center_Frame, text='Select School', state='readonly')
-			School_Combobox['values'] = Queries.Grab_Schools()
-			School_Combobox.place(relx=.72, rely=.19,anchor= CENTER, width='100')
+			self.School_Combobox = Combobox(self.Center_Frame, text='Select School', state='readonly')
+			self.School_Combobox['values'] = Queries.Grab_Schools()
+			self.School_Combobox.place(relx=.72, rely=.19,anchor= CENTER, width='100')
 
-			Hat_Combobox = Combobox(self.Center_Frame, text='Select Hat', state='readonly')
-			Hat_Combobox['values'] = Queries.Populate_Add_Record_CBs('Hats')
-			Hat_Combobox.place(relx=.33, rely=.61,anchor= CENTER)
+			self.Hat_Combobox = Combobox(self.Center_Frame, text='Select Hat', state='readonly')
+			self.Hat_Combobox['values'] = Queries.Populate_Add_Record_CBs('Hats')
+			self.Hat_Combobox.place(relx=.33, rely=.61,anchor= CENTER)
 
-			Coat_Combobox = Combobox(self.Center_Frame, text='Select Coat', state='readonly')
-			Coat_Combobox['values'] = Queries.Populate_Add_Record_CBs('Coats')
-			Coat_Combobox.place(relx=.50, rely=.61,anchor= CENTER)
+			self.Coat_Combobox = Combobox(self.Center_Frame, text='Select Coat', state='readonly')
+			self.Coat_Combobox['values'] = Queries.Populate_Add_Record_CBs('Coats')
+			self.Coat_Combobox.place(relx=.50, rely=.61,anchor= CENTER)
 
-			Gloves_Combobox = Combobox(self.Center_Frame, text='Select Gloves', state='readonly')
-			Gloves_Combobox['values'] = Queries.Populate_Add_Record_CBs('Gloves')
-			Gloves_Combobox.place(relx=.66, rely=.61,anchor= CENTER)
+			self.Gloves_Combobox = Combobox(self.Center_Frame, text='Select Gloves', state='readonly')
+			self.Gloves_Combobox['values'] = Queries.Populate_Add_Record_CBs('Gloves')
+			self.Gloves_Combobox.place(relx=.66, rely=.61,anchor= CENTER)
 
-			Socks_Combobox = Combobox(self.Center_Frame, text='Select Socks', state='readonly')
-			Socks_Combobox['values'] = Queries.Populate_Add_Record_CBs('Socks')
-			Socks_Combobox.place(relx=.4, rely=.8,anchor= CENTER)
+			self.Socks_Combobox = Combobox(self.Center_Frame, text='Select Socks', state='readonly')
+			self.Socks_Combobox['values'] = Queries.Populate_Add_Record_CBs('Socks')
+			self.Socks_Combobox.place(relx=.4, rely=.8,anchor= CENTER)
 
-			Boots_Combobox = Combobox(self.Center_Frame, text='Select Boots', state='readonly')
-			Boots_Combobox['values'] = Queries.Populate_Add_Record_CBs('Boots')
-			Boots_Combobox.place(relx=.6, rely=.8,anchor= CENTER)
+			self.Boots_Combobox = Combobox(self.Center_Frame, text='Select Boots', state='readonly')
+			self.Boots_Combobox['values'] = Queries.Populate_Add_Record_CBs('Boots')
+			self.Boots_Combobox.place(relx=.6, rely=.8,anchor= CENTER)
 
 
 			#Create Buttons
@@ -626,7 +631,8 @@ class Application(Tk):
 			Exit.pack(pady=15, padx=45, side=LEFT)
 
 
-			Submit = Button(self.Center_Frame, text="Submit Record", font=("Arial",15), command=lambda:self.Btn_Submit_Record(), bd=3)
+			Submit = Button(self.Center_Frame, text="Submit Record", font=("Arial",15), command=lambda:self.Btn_Submit_Record(self.Child_First_Entry, self.Child_Last_Entry, self.Child_Age_Entry, self.Gender_Combobox, self.School_Combobox,
+						self.Parent_First_Entry, self.Parent_Last_Entry, self.Phone_Entry, self.Street_Entry, self.City_Entry, self.Zip_Entry, self.Hat_Combobox, self.Coat_Combobox, self.Gloves_Combobox, self.Socks_Combobox, self.Boots_Combobox), bd=3)
 			Submit.place(relx=.5,rely=.93,anchor=CENTER)
 
 	def View_Record_Window(self):
