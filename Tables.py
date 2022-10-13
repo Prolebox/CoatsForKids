@@ -65,7 +65,7 @@ def Create():
 
             create table if not exists Records (
                 Child_First text not null,
-                Child_Lasts text not null,
+                Child_Last text not null,
                 Child_Age int(2) not null,
                 Child_Gender text check(child_gender in('Male','Female','Other')) not null,
                 Child_School text not null,
