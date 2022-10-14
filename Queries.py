@@ -207,27 +207,65 @@ def Add_School(school):
 
 ###################### Add Record Window ######################
 def Add_Record(CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street, City, Zip, Hat, Coat, Gloves, Socks, Boots):
+	##### Add Record to Database #####
 	#Combine entry boxes to test for empty values
 	required_info = (CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street, City, Zip)
-	#Initial item list containing potentially empty values
-	initial_items = [Hat, Coat, Gloves, Socks, Boots]
-	#Items list after empty items cut out
-	cut_items = []
 
-	for each in initial_items:
-		if each != '':
-			cut_items.append(each)
-
+    #Return empty to display notification window if required info missing
 	if '' in required_info:
 		return 'empty'
 	else:
-		#Remove empty items
-		print(cut_items)
-		#with sql.connect('CoatsDB') as con:
-		#	cur = con.cursor()
-		#	cur.execute("""
-#
-#			""")
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				insert into Records (Child_First, Child_Last, Child_Age, Child_Gender, Child_School,
+								Parent_First, Parent_Last, Parent_Phone, Parent_Street, Parent_City, Parent_Zip,
+								Hat, Coat, Gloves, Socks, Boots)
+				values (?, ?, ?, ?, ?,
+						?, ?, ?, ?, ?, ?,
+						?, ?, ?, ?, ?);
+			""", (CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street, City, Zip, Hat, Coat, Gloves, Socks, Boots))
+	con.close()
+
+	##### Delete corresponding items from inventory tables #####
+    #List of items to split the type and size out of string
+	split_items = [Coat, Gloves, Boots]
+
+    #Split the type and size from concatanated string
+	#Then remove the comma from the type
+	#Combine the type and size into a tuple to be iterated through in deletion query
+	for each in range(len(split_items)):
+		if split_items[each] != '':
+			split_items[each] = split_items[each].split()
+		split_items[each][0] = split_items[each][0].rstrip(",")
+		split_items[each] = split_items[each][0],split_items[each][1]
+
+
+	#Iterate through each item and delete the corresponding item submitted in the record
+	type_size_items = ['Coats','Gloves','Boots']
+	for each in range(len(type_size_items)):
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				delete from %s
+				where %s = (?) and %s = (?)
+				limit ?;
+			""" % (type_size_items[each]+'_Inventory', type_size_items[each]+'_Type',type_size_items[each]+'_Size'), (split_items[each][0],split_items[each][1], 1))
+		con.close()
+
+	#Delete Hat and Socks
+	type_item_names = ['Hats','Socks']
+	type_items = [Hat, Socks]
+	for each in range(len(type_items)):
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				delete from %s
+				where %s = (?)
+				limit ?;
+			""" % (type_item_names[each]+'_Inventory', type_item_names[each]+'_Type'), (type_items[each], 1))
+
+
 ###################### Queries to update comboboxes #######################
 def Grab_Schools():
 	with sql.connect('CoatsDB') as con:
@@ -238,18 +276,18 @@ def Grab_Schools():
 
 #Grab all unique values from type column, as the same type may have multiple sizes
 def Grab_Item_Types(name):
-	item_type = name+'_Type'
-	table = name+'_Inventory'
+    item_type = name+'_Type'
 
-	with sql.connect('CoatsDB') as con:
-		cur = con.cursor()
-		cur.execute("""
-			select distinct %s
-			from %s;
-		""" % (item_type, table))
-		types = cur.fetchall()
-		return types
-	con.close()
+
+    with sql.connect('CoatsDB') as con:
+        cur = con.cursor()
+        cur.execute("""
+            select distinct %s
+            from %s;
+        """ % (item_type, name))
+        types = cur.fetchall()
+        return types
+    con.close()
 
 #Grab item size based upon preselected type
 def Grab_Item_Sizes(name, type):

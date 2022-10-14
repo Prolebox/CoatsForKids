@@ -26,8 +26,6 @@ class Application(Tk):
 			underscore = underscore + '_'
 		return underscore
 
-
-
 	#Add record window
 	def Btn_Submit_Inventory(self, name, type, size='', amount=''):
 		Queries.Add_Inventory_Record(name.get(),type.get(),size.get(),amount.get())
@@ -61,7 +59,6 @@ class Application(Tk):
 
 		#Disable text widget so you cannot type
 		self.View_Subitems.config(state=DISABLED)
-
 
 
 	#School menubar window
@@ -98,10 +95,6 @@ class Application(Tk):
 
 		self.Clear_Entry_box(CFirst, CLast, CAge, PFirst, PLast, Phone, Street, City, Zip)
 		self.Clear_Combobox(Gender, School, Hat, Coat, Gloves, Socks, Boots)
-
-
-
-
 
 
 	#Add/Remove Item window
@@ -315,7 +308,6 @@ class Application(Tk):
 		Remove_Record.place(relx=.5, rely=.62,anchor= CENTER, height=55, width=250)
 
 
-
 	def Remove_Inventory_Window(self):
 		if self.counter < 1:
 			self.counter += 1
@@ -346,16 +338,16 @@ class Application(Tk):
 			Copyright.pack(side=BOTTOM)
 
 			#Create Combobox Widgets
-			self.Remove_Inventory_Combobox = Combobox(self.Center_Frame, text='Select an item', state='readonly',font=("Arial",14))
+			self.Remove_Inventory_Combobox = Combobox(self.Center_Frame, state='readonly',font=("Arial",14))
 			self.Remove_Inventory_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Inventory_Type_Combobox)
 			self.Remove_Inventory_Combobox['values'] = ('Hats','Coats','Gloves','Boots','Socks')
 			self.Remove_Inventory_Combobox.place(relx=.58, rely=.22,anchor= CENTER)
 
-			self.Remove_Inventory_Type_Combobox = Combobox(self.Center_Frame, text='Select item type', state='readonly',font=("Arial",14))
+			self.Remove_Inventory_Type_Combobox = Combobox(self.Center_Frame, state='readonly',font=("Arial",14))
 			self.Remove_Inventory_Type_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Inventory_Size_Combobox)
 			self.Remove_Inventory_Type_Combobox.place(relx=.58, rely=.4,anchor= CENTER)
 
-			self.Remove_Inventory_Size_Combobox = Combobox(self.Center_Frame, text='Select item size', state='readonly',font=("Arial",14))
+			self.Remove_Inventory_Size_Combobox = Combobox(self.Center_Frame, state='readonly',font=("Arial",14))
 			self.Remove_Inventory_Size_Combobox.place(relx=.58, rely=.58,anchor= CENTER)
 
 			#Create Entry Widgets
@@ -478,19 +470,49 @@ class Application(Tk):
 			Select = Button(self.Center_Frame, text="Search", font=("Arial", 14), command=lambda: self.Btn_View_Inventory(self.View_Select_Item_CB.get()), padx=5, pady=5, bd=3)
 			Select.place(relx=.625, rely=.2,anchor= CENTER)
 
+			self.Clear_Combobox(self.View_Select_Item_CB)
+
+
 			Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 			Exit.bind("<Button-1>", self.Reset_Counter)
 			Exit.pack(pady=15, padx=45, side=LEFT)
 
 
 	def Remove_Record_Window(self):
-		if self.counter <1:
+		if self.counter < 1:
 			self.counter += 1
+			#Create Add Inventory Window
+			self.Configure_Window_Defaults(title='Remove Inventory')
 
-			self.Configure_Window_Defaults(title='Delete Record')
-
-			#~~~ Add Widgets~~~
+			#~~~ Add Widets ~~~
 			#Create Labels
+			Title_Image = Label(self.Top_Frame, image=self.Title_Image, font=("Arial",60), pady=5, bg='#f1f5f4')
+			Title_Image.pack(fill=X, pady=12)
+
+			Title_Desc = Label(self.Top_Frame, text='Remove Inventory',  font=("Arial",25), bg='#f1f5f4')
+			Title_Desc.pack(fill=X)
+
+			Record = Label(self.Center_Frame, text='Select a record to delete', font=("Arial",23), pady=5, bg='#f5f1f2')
+			Record.place(relx=.5, rely=.4,anchor= CENTER, height=55)
+
+			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
+			Copyright.pack(side=BOTTOM)
+
+			#Create Combobox Widgets
+
+			self.Record_Combobox = Combobox(self.Center_Frame, state='readonly',font=("Arial",14))
+			#self.Record_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Inventory_Size_Combobox)
+			self.Record_Combobox.place(relx=.5, rely=.55,anchor= CENTER)
+
+
+			#Clear combobox and entry widgets because for some reason the inventory comboboxes are keeping values stored
+			#when window is closed. All other windows besides these clear upon close. I want to clear upon close. I cannot for the life of me
+			#figure out why so I am putting this here out of spite
+			self.Clear_Combobox(self.Record_Combobox)
+
+			#Create Buttons
+			Submit = Button(self.Center_Frame, text="Submit",font=("Arial",20), command=lambda: self.Btn_Remove_Inventory(self.Remove_Inventory_Combobox, self.Remove_Inventory_Type_Combobox, self.Remove_Inventory_Size_Combobox, self.Remove_Inventory_Amount_Entry), padx=10, pady=10, width=25, bd=3)
+			Submit.place(relx=.5, rely=.9,anchor= CENTER, height=55, width=200)
 
 			Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 			Exit.bind("<Button-1>", self.Reset_Counter)
@@ -632,8 +654,15 @@ class Application(Tk):
 
 
 			Submit = Button(self.Center_Frame, text="Submit Record", font=("Arial",15), command=lambda:self.Btn_Submit_Record(self.Child_First_Entry, self.Child_Last_Entry, self.Child_Age_Entry, self.Gender_Combobox, self.School_Combobox,
-						self.Parent_First_Entry, self.Parent_Last_Entry, self.Phone_Entry, self.Street_Entry, self.City_Entry, self.Zip_Entry, self.Hat_Combobox, self.Coat_Combobox, self.Gloves_Combobox, self.Socks_Combobox, self.Boots_Combobox), bd=3)
+						self.Parent_First_Entry, self.Parent_Last_Entry, self.Phone_Entry, self.Street_Entry, self.City_Entry, self.Zip_Entry,
+						self.Hat_Combobox, self.Coat_Combobox, self.Gloves_Combobox, self.Socks_Combobox, self.Boots_Combobox), bd=3)
 			Submit.place(relx=.5,rely=.93,anchor=CENTER)
+
+			#Clear combobox and entry widgets because for some reason the inventory comboboxes are keeping values stored
+			#when window is closed. All other windows besides these clear upon close. I want to clear upon close. I cannot for the life of me
+			#figure out why so I am putting this here out of spite
+			self.Clear_Combobox(self.Gender_Combobox, self.School_Combobox, self.Hat_Combobox, self.Coat_Combobox, self.Gloves_Combobox, self.Socks_Combobox, self.Boots_Combobox)
+
 
 	def View_Record_Window(self):
 		if self.counter < 1:
