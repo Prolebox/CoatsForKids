@@ -501,6 +501,7 @@ class Application(Tk):
 			#Create Combobox Widgets
 
 			self.Record_Combobox = Combobox(self.Center_Frame, state='readonly',font=("Arial",14))
+			self.Record_Combobox['values'] = Queries.Populate_Remove_Record_CBs() 
 			#self.Record_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Inventory_Size_Combobox)
 			self.Record_Combobox.place(relx=.5, rely=.55,anchor= CENTER)
 
@@ -663,7 +664,6 @@ class Application(Tk):
 			#figure out why so I am putting this here out of spite
 			self.Clear_Combobox(self.Gender_Combobox, self.School_Combobox, self.Hat_Combobox, self.Coat_Combobox, self.Gloves_Combobox, self.Socks_Combobox, self.Boots_Combobox)
 
-
 	def View_Record_Window(self):
 		if self.counter < 1:
 			self.counter += 1
@@ -703,6 +703,7 @@ class Application(Tk):
 			Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 			Exit.bind("<Button-1>", self.Reset_Counter)
 			Exit.pack(pady=15, padx=45, side=LEFT)
+
 
 	##### MENU BARS #####
 	def Item_Menubar(self):
