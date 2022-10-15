@@ -228,29 +228,56 @@ def Add_Record(CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street
 	con.close()
 
 	##### Delete corresponding items from inventory tables #####
-    #List of items to split the type and size out of string
-	split_items = [Coat, Gloves, Boots]
+    #List of items to split the type and size out of string, flter out empty items
+	#type, size order: COAT, GLOVES, BOOTS
+	type_size_items = [Coat, Gloves, Boots]
+
+	#list of split item names to be used in table and variable names for deletion query
+	#print(split_items)
+	split_items = []
+	split_items_names = []
+	for each in range(len(type_size_items)):
+		if type_size_items[each] == Coat and type_size_items[each] != '':
+			split_items.append(type_size_items[each])
+			split_items_names.append('Coats')
+		elif type_size_items[each] == Gloves and type_size_items[each] != '':
+			split_items.append(type_size_items[each])
+			split_items_names.append('Gloves')
+		elif type_size_items[each] == Boots and type_size_items[each] != '':
+			split_items.append(type_size_items[each])
+			split_items_names.append('Boots')
+	print(split_items)
+
 
     #Split the type and size from concatanated string
 	#Then remove the comma from the type
 	#Combine the type and size into a tuple to be iterated through in deletion query
 	for each in range(len(split_items)):
 		if split_items[each] != '':
+			print(split_items[each])
 			split_items[each] = split_items[each].split()
-		split_items[each][0] = split_items[each][0].rstrip(",")
-		split_items[each] = split_items[each][0],split_items[each][1]
+
+	print('split_items: ',split_items)
+	for each in range(len(split_items)):
+		if split_items[each] != '':
+			split_items[each][0] = split_items[each][0].rstrip(",")
+			split_items[each] = split_items[each][0],split_items[each][1]
 
 
-	#Iterate through each item and delete the corresponding item submitted in the record
-	type_size_items = ['Coats','Gloves','Boots']
-	for each in range(len(type_size_items)):
+
+	print('type_size_items: ',split_items_names)
+	for each in range(len(split_items_names)):
+		type = split_items[each][0]
+		size = split_items[each][1]
+
+		print('type, size: ',type,size)
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
 			cur.execute("""
 				delete from %s
 				where %s = (?) and %s = (?)
-				limit ?;
-			""" % (type_size_items[each]+'_Inventory', type_size_items[each]+'_Type',type_size_items[each]+'_Size'), (split_items[each][0],split_items[each][1], 1))
+				limit (?);
+			""" % (split_items_names[each]+'_Inventory', split_items_names[each]+'_Type',split_items_names[each]+'_Size'), (type,size, 1))
 		con.close()
 
 	#Delete Hat and Socks
@@ -265,6 +292,8 @@ def Add_Record(CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street
 				limit ?;
 			""" % (type_item_names[each]+'_Inventory', type_item_names[each]+'_Type'), (type_items[each], 1))
 
+def Remove_Record():
+	pass
 
 ###################### Queries to update comboboxes #######################
 def Grab_Schools():
@@ -347,3 +376,11 @@ def Populate_Add_Record_CBs(name):
 				type = subitems[i]
 				combobox_values.append(type)
 			return combobox_values
+
+#Populate comboboxes on remove record window
+def Populate_Remove_Record_CBs():
+	with sql.connect('CoatsDB') as con:
+		cur = con.cursor()
+		cur.execute("select Child_First, Child_Last, Record_Id from Records;")
+		return cur.fetchall()
+	con.close()
