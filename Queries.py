@@ -232,45 +232,50 @@ def Add_Record(CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street
 	#type, size order: COAT, GLOVES, BOOTS
 	type_size_items = [Coat, Gloves, Boots]
 
-	#list of split item names to be used in table and variable names for deletion query
-	#print(split_items)
+	#list of split types and sizes
 	split_items = []
+	#list of split item names to be used in table and variable names for deletion query
 	split_items_names = []
+	#Keep track of what item has been checked for already
+	#This is to prevent all checks matching the first if statement if the types and sizes are the same between items
+	i = 0
+
 	for each in range(len(type_size_items)):
-		if type_size_items[each] == Coat and type_size_items[each] != '':
+		if type_size_items[each] == Coat and type_size_items[each] != '' and i < 1:
 			split_items.append(type_size_items[each])
 			split_items_names.append('Coats')
-		elif type_size_items[each] == Gloves and type_size_items[each] != '':
+			i  += 1
+		elif type_size_items[each] == Gloves and type_size_items[each] != '' and i < 2:
 			split_items.append(type_size_items[each])
 			split_items_names.append('Gloves')
-		elif type_size_items[each] == Boots and type_size_items[each] != '':
+			i  += 1
+		elif type_size_items[each] == Boots and type_size_items[each] != ''and i < 3:
 			split_items.append(type_size_items[each])
 			split_items_names.append('Boots')
-	print(split_items)
+			i += 1
 
+	#Reset for next query
+	i = 0
 
     #Split the type and size from concatanated string
-	#Then remove the comma from the type
 	#Combine the type and size into a tuple to be iterated through in deletion query
 	for each in range(len(split_items)):
 		if split_items[each] != '':
 			print(split_items[each])
 			split_items[each] = split_items[each].split()
 
-	print('split_items: ',split_items)
+	#Remove the comma from the type
 	for each in range(len(split_items)):
 		if split_items[each] != '':
 			split_items[each][0] = split_items[each][0].rstrip(",")
 			split_items[each] = split_items[each][0],split_items[each][1]
 
 
-
-	print('type_size_items: ',split_items_names)
+	#Delete the corresponding items submitted from the inventory tables
 	for each in range(len(split_items_names)):
 		type = split_items[each][0]
 		size = split_items[each][1]
 
-		print('type, size: ',type,size)
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
 			cur.execute("""
