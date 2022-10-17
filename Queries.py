@@ -5,15 +5,17 @@ import sqlite3 as sql
 
 ###################### View Inventory Window ######################
 def Total_Item_Count(item):
-	values = item+'_Inventory'
-	with sql.connect('CoatsDB') as con:
-		cur = con.cursor()
-		cur.execute("""
-			select count(*) as count from %s;
-		""" % values)
-		return cur.fetchall()
-	con.close()
-
+	try:
+		values = item+'_Inventory'
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				select count(*) as count from %s;
+			""" % values)
+			return cur.fetchall()
+		con.close()
+	except:
+		return 'empty'
 ###################### Return each subitem and the amount of that item ######################
 def Total_Subitems_Count(name):
 	#Dictionary to be returned containing item : count
@@ -65,9 +67,10 @@ def Total_Subitems_Count(name):
 
 		return items_with_count
 	con.close()
-
 ###################### Remove Inventory Window ######################
 def Remove_Inventory_Record(name, type, size='', amount=''):
+	if name == '' and type == '' and size == '' and amount == '':
+		return 'empty'
 	item_type = name+'_Type'
 	item_size = name+'_Size'
 	table_name = name+'_Inventory'
@@ -93,40 +96,48 @@ def Remove_Inventory_Record(name, type, size='', amount=''):
 		con.close()
 
 ###################### Add Inventory Window ######################
-def Add_Inventory_Record(name, type, size='', amount=''):
+def Add_Inventory_Record(name, type, amount, size=''):
+	if name == '' and type == '' and size == '' and amount == '':
+		return 'empty'
+
 	item_type = name+'_Type'
 	item_size = name+'_Size'
 	table_name = name+'_Inventory'
 	i = 0
 
-	if name in ['Boots','Coats','Gloves']:
-		with sql.connect('CoatsDB') as con:
-			cur = con.cursor()
-			while(i < int(amount)):
-				cur.execute("""
-					insert into %s (%s, %s)
-					values (?,?);
-				""" % (table_name, item_type, item_size), (type, size))
-				i += 1
-		con.close()
 
-	elif name in ['Socks','Hats'] and type != '':
-		with sql.connect('CoatsDB') as con:
-			cur = con.cursor()
-			while(i < int(amount)):
-				cur.execute("""
-					insert into %s (%s)
-					values (?);
-				""" % (table_name, item_type), (type,))
-				i += 1
-		con.close()
+	try:
+		if name in ['Boots','Coats','Gloves']:
+			with sql.connect('CoatsDB') as con:
+				cur = con.cursor()
+				while(i < int(amount)):
+					cur.execute("""
+						insert into %s (%s, %s)
+						values (?,?);
+					""" % (table_name, item_type, item_size), (type, size))
+					i += 1
+			con.close()
 
+		elif name in ['Socks','Hats'] and type != '':
+			with sql.connect('CoatsDB') as con:
+				cur = con.cursor()
+				while(i < int(amount)):
+					cur.execute("""
+						insert into %s (%s)
+						values (?);
+					""" % (table_name, item_type), (type,))
+					i += 1
+			con.close()
+	except:
+		return "invalid integer"
 ###################### Items Window ######################
 def Remove_Item(name, type='', size=''):
 	item_type = name+'_Type'
 	item_size = name+'_Size'
 	#Check which item is being added and set variables for the sql query
 	if name in ['Boots','Coats','Gloves']:
+		if size == '':
+			return 'empty'
 		with sql.connect('CoatsDB') as con:
 			cur = con.cursor()
 			cur.execute("""
@@ -297,21 +308,23 @@ def Add_Record(CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street
 			""" % (type_item_names[each]+'_Inventory', type_item_names[each]+'_Type'), (type_items[each], 1))
 
 def Remove_Record(record):
-	record = record.split()
+	try:
+		record = record.split()
 
-	Child_First = str(record[0]).rstrip(",")
-	Child_Last = str(record[1]).rstrip(",")
-	Record_Id = str(record[2]).lstrip("#")
+		Child_First = str(record[0]).rstrip(",")
+		Child_Last = str(record[1]).rstrip(",")
+		Record_Id = str(record[2]).lstrip("#")
 
-	with sql.connect('CoatsDB') as con:
-		cur = con.cursor()
-		cur.execute("""
-			delete from Records
-			where Child_First = (?) and Child_Last = (?) and Record_Id = (?);
-		""", (Child_First, Child_Last, Record_Id))
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				delete from Records
+				where Child_First = (?) and Child_Last = (?) and Record_Id = (?);
+			""", (Child_First, Child_Last, Record_Id))
 
-	con.close()
-
+		con.close()
+	except:
+		return 'empty'
 ###################### Queries to update comboboxes #######################
 def Grab_Schools():
 	with sql.connect('CoatsDB') as con:
@@ -350,25 +363,27 @@ def Grab_Item_Sizes(name, type):
 	con.close()
 
 def Grab_Records(record):
-	record = record.split()
-	Child_First = str(record[0]).rstrip(",")
-	Child_Last = str(record[1]).rstrip(",")
-	Record_Id = str(record[2]).lstrip("#")
+	try:
+		record = record.split()
+		Child_First = str(record[0]).rstrip(",")
+		Child_Last = str(record[1]).rstrip(",")
+		Record_Id = str(record[2]).lstrip("#")
 
-	with sql.connect('CoatsDB') as con:
-		cur = con.cursor()
-		cur.execute("""
-			select *
-			from Records
-			where Child_First = (?) and Child_Last = (?) and Record_Id = (?);
-		""", (Child_First, Child_Last, Record_Id))
+		with sql.connect('CoatsDB') as con:
+			cur = con.cursor()
+			cur.execute("""
+				select *
+				from Records
+				where Child_First = (?) and Child_Last = (?) and Record_Id = (?);
+			""", (Child_First, Child_Last, Record_Id))
 
-		result = cur.fetchall()
-		result = list(result[0])
+			result = cur.fetchall()
+			result = list(result[0])
 
-	con.close()
-	return result
-
+		con.close()
+		return result
+	except:
+		return 'empty'
 #Used to populate comboboxes on Add Record window
 def Populate_Add_Record_CBs(name):
 	table_name = name+'_Inventory'

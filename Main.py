@@ -28,26 +28,34 @@ class Application(Tk):
 
 	#Add record window
 	def Btn_Submit_Inventory(self, name, type, size='', amount=''):
-		Queries.Add_Inventory_Record(name.get(),type.get(),size.get(),amount.get())
+
+		if Queries.Add_Inventory_Record(name.get(), type.get(), amount.get(), size.get()) == 'invalid integer':
+			self.Notification_Window(text='You must enter a number \nin the amount box!')
+		elif Queries.Add_Inventory_Record(name.get(), type.get(), amount.get(), size.get()) == 'empty':
+			self.Notification_Window(text='You must enter values in every box!')
+
+
 		self.Clear_Combobox(name, type, size)
 		self.Clear_Entry_box(amount)
 
 	def Btn_Remove_Inventory(self, name, type, size='', amount=''):
-		Queries.Remove_Inventory_Record(name.get(),type.get(),size.get(),amount.get())
+		if Queries.Remove_Inventory_Record(name.get(),type.get(),size.get(),amount.get()) == 'empty':
+			self.Notification_Window(text='You must select inventory to remove!')
+
 		self.Clear_Combobox(name, type, size)
 		self.Clear_Entry_box(amount)
 
 	#View inventory window
 	def Btn_View_Inventory(self, name):
+
+		subitems = Queries.Total_Subitems_Count(name)
+
 		#Enable text box to clear between searches, then to put data in
 		self.View_Subitems.config(state=NORMAL)
 		self.View_Subitems.delete('1.0', END)
 
 		self.View_Item_Selected['text'] = 'Item: ' + name
 		self.View_Total['text'] = 'Total:',Queries.Total_Item_Count(name)
-
-		#Grab dictionary of subitem : count
-		subitems = Queries.Total_Subitems_Count(name)
 
 		if name in ['Boots','Coats','Gloves']:
 			#Display subitem : count
@@ -97,7 +105,10 @@ class Application(Tk):
 		self.Clear_Combobox(Gender, School, Hat, Coat, Gloves, Socks, Boots)
 
 	def Btn_Remove_Record(self, record):
-		Queries.Remove_Record(record.get())
+
+		if Queries.Remove_Record(record.get()) == 'empty':
+			self.Notification_Window(text='You must select a record to delete!')
+
 		self.Clear_Combobox(record)
 		self.Remove_Record_Combobox['values'] = Queries.Populate_Record_CName_Id()
 
@@ -105,6 +116,10 @@ class Application(Tk):
 
 		#Grab the record desired from the Records table
 		results = Queries.Grab_Records(record.get())
+		if results == 'empty':
+			self.Notification_Window(text='You must select a record to search!')
+
+
 
 		#Order of results list
 		#('CFirst', 'CLast', 'CAge', 'Male', 'Hedhges',
@@ -134,7 +149,8 @@ class Application(Tk):
 
 	#Add/Remove Item window
 	def Btn_Remove_Item(self, name, type, size):
-		Queries.Remove_Item(name.get(),type.get(),size.get())
+		if Queries.Remove_Item(name.get(),type.get(),size.get()) == 'empty':
+			self.Notification_Window(text='You must enter a size with the type!')
 		self.Clear_Combobox(type, size)
 		#Must pass an argument since the function is bound to a tkinter event and expects one
 		#Passing an emtpy string seems to work
