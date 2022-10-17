@@ -103,14 +103,34 @@ class Application(Tk):
 
 	def Btn_View_Record(self, record):
 
-		self.View_Records.config(state=NORMAL)
-		self.View_Records.delete('1.0', END)
+		#Grab the record desired from the Records table
+		results = Queries.Grab_Records(record.get())
 
-		print(Queries.Grab_Records(record.get()))
+		#Order of results list
+		#('CFirst', 'CLast', 'CAge', 'Male', 'Hedhges',
+		#'PFirst', 'PLast', 'Phone', 'Street', 'City', 'Zip',
+		#'Hats', 'Coat, Coat', 'Gloves, Gloves', 'Socks', 'Boots, Boots', 39)
 
-		#self.View_Records.insert(END, Queries.Grab_Records(record.get()))
+		#Populate labels with record information
+		self.View_Child_First['text'] = 'Childs First: '+results[0]
+		self.View_Child_Last['text'] = 'Childs Last: '+results[1]
+		self.View_Child_Age['text'] = 'Childs Age: '+results[2]
+		self.View_Child_Gender['text'] = 'Childs Gender: '+results[3]
+		self.View_Child_School['text'] = 'Childs School: '+results[4]
 
-		self.View_Records.config(state=DISABLED)
+		self.View_Parent_First['text'] = 'Parents First: '+results[5]
+		self.View_Parent_Last['text'] = 'Parents Last: '+results[6]
+		self.View_Parent_Phone['text'] = 'Phone: '+results[7]
+		self.View_Parent_Street['text'] = 'Street: '+results[8]
+		self.View_Parent_City['text'] = 'City: '+results[9]
+		self.View_Parent_Zip['text'] = 'Zip: '+results[10]
+
+		self.View_Hat['text'] = 'Hat: '+results[11]
+		self.View_Coat['text'] = 'Coat: '+results[12]
+		self.View_Gloves['text'] = 'Gloves: '+results[13]
+		self.View_Socks['text'] = 'Socks: '+results[14]
+		self.View_Boots['text'] = 'Boots: '+results[15]
+		self.View_Id['text'] = 'Record ID: '+str(results[16])
 
 	#Add/Remove Item window
 	def Btn_Remove_Item(self, name, type, size):
@@ -693,29 +713,74 @@ class Application(Tk):
 			Title_Description = Label(self.Top_Frame, text='View Inventory',  font=("Arial",20), bg='#f1f5f4')
 			Title_Description.pack(fill=X)
 
-			Search = Label(self.Center_Frame, text='Search Records by Child Name', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Search = Label(self.Center_Frame, text='Search records by child name', font=("Arial",20), pady=5, bg='#f5f1f2')
 			Search.place(relx=.5, rely=.12,anchor= CENTER)
 
-			self.View_Records = Text(self.Center_Frame, font=("Arial",20), bg='#f5f1f2', width=30, height=6)
-			self.View_Records.place(relx=.5, rely=.75,anchor= CENTER)
-
 			Separator = Label(self.Center_Frame, text=self.Underscore(35),  font=("Arial",15), bg='#f5f1f2')
-			Separator.place(relx=.35, rely=.4)
+			Separator.place(relx=.35, rely=.3)
 
 			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
 			Copyright.pack(side=BOTTOM)
 
-			#Test for None otherwise Combobox will throw an error
-			AutocompleteBox_values = Queries.Populate_Record_CName_Id()
-			if AutocompleteBox_values == None:
-				AutocompleteBox_values = 'None'
+
+			self.Records_List = Combobox(self.Center_Frame, text='Select Gloves', state='readonly')
+			self.Records_List['values'] = Queries.Populate_Record_CName_Id()
+			self.Records_List.place(relx=.5, rely=.22,anchor= CENTER)
 
 
-			self.AutocompleteBox = AutocompleteEntry(self.Center_Frame, font=("Arial",14), completevalues=AutocompleteBox_values)
-			self.AutocompleteBox.place(relx=.5, rely=.22,anchor= CENTER)
+			self.View_Child_First = Label(self.Center_Frame, text='Childs First: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Child_First.place(relx=.2, rely=.45,anchor= CENTER)
+
+			self.View_Child_Last = Label(self.Center_Frame, text='Childs Last: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Child_Last.place(relx=.2, rely=.55,anchor= CENTER)
+
+			self.View_Child_Age = Label(self.Center_Frame, text='Childs Age: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Child_Age.place(relx=.2, rely=.65,anchor= CENTER)
+
+			self.View_Child_Gender = Label(self.Center_Frame, text='Childs Gender: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Child_Gender.place(relx=.2, rely=.75,anchor= CENTER)
+
+			self.View_Child_School = Label(self.Center_Frame, text='Childs Schools: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Child_School.place(relx=.2, rely=.85,anchor= CENTER)
+
+			self.View_Parent_First = Label(self.Center_Frame, text='Parents First: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Parent_First.place(relx=.5, rely=.45,anchor= CENTER)
+
+			self.View_Parent_Last = Label(self.Center_Frame, text='Parents Last: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Parent_Last.place(relx=.5, rely=.55,anchor= CENTER)
+
+			self.View_Parent_Phone = Label(self.Center_Frame, text='Parents Phone: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Parent_Phone.place(relx=.5, rely=.65,anchor= CENTER)
+
+			self.View_Parent_Street = Label(self.Center_Frame, text='Parents Street: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Parent_Street.place(relx=.5, rely=.75,anchor= CENTER)
+
+			self.View_Parent_City = Label(self.Center_Frame, text='Parents City: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Parent_City.place(relx=.5, rely=.85,anchor= CENTER)
+
+			self.View_Parent_Zip = Label(self.Center_Frame, text='Parents Zip: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Parent_Zip.place(relx=.5, rely=.95,anchor= CENTER)
+
+			self.View_Hat = Label(self.Center_Frame, text='Hat: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Hat.place(relx=.8, rely=.45,anchor= CENTER)
+
+			self.View_Coat = Label(self.Center_Frame, text='Coat: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Coat.place(relx=.8, rely=.55,anchor= CENTER)
+
+			self.View_Gloves = Label(self.Center_Frame, text='Gloves: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Gloves.place(relx=.8, rely=.65,anchor= CENTER)
+
+			self.View_Socks = Label(self.Center_Frame, text='Socks: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Socks.place(relx=.8, rely=.75,anchor= CENTER)
+
+			self.View_Boots = Label(self.Center_Frame, text='Boots: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Boots.place(relx=.8, rely=.85,anchor= CENTER)
+
+			self.View_Id = Label(self.Center_Frame, text='Record ID: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Id.place(relx=.8, rely=.95,anchor= CENTER)
 
 			#Create buttons
-			Submit = Button(self.Center_Frame, text="Search", command=lambda: self.Btn_View_Record(self.AutocompleteBox), padx=5, pady=5, font=("Arial", 12), bd=3)
+			Submit = Button(self.Center_Frame, text="Search", command=lambda: self.Btn_View_Record(self.Records_List), padx=5, pady=5, font=("Arial", 12), bd=3)
 			Submit.place(relx=.62, rely=.22,anchor= CENTER)
 
 			Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)

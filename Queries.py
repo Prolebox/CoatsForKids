@@ -261,7 +261,6 @@ def Add_Record(CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street
 	#Combine the type and size into a tuple to be iterated through in deletion query
 	for each in range(len(split_items)):
 		if split_items[each] != '':
-			print(split_items[each])
 			split_items[each] = split_items[each].split()
 
 	#Remove the comma from the type
@@ -309,8 +308,6 @@ def Remove_Record(record):
 
 	con.close()
 
-def View_Record():
-	pass
 ###################### Queries to update comboboxes #######################
 def Grab_Schools():
 	with sql.connect('CoatsDB') as con:
@@ -354,7 +351,6 @@ def Grab_Records(record):
 	Child_Last = str(record[1]).rstrip(",")
 	Record_Id = str(record[2]).lstrip("#")
 
-	print(Child_First,Child_Last,Record_Id)
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
 		cur.execute("""
@@ -362,8 +358,12 @@ def Grab_Records(record):
 			from Records
 			where Child_First = (?) and Child_Last = (?) and Record_Id = (?);
 		""", (Child_First, Child_Last, Record_Id))
-		return cur.fetchall()
+
+		result = cur.fetchall()
+		result = list(result[0])
+
 	con.close()
+	return result
 
 #Used to populate comboboxes on Add Record window
 def Populate_Add_Record_CBs(name):
