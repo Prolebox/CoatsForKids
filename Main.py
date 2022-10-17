@@ -100,6 +100,16 @@ class Application(Tk):
 		Queries.Remove_Record(record.get())
 		self.Clear_Combobox(record)
 		self.Remove_Record_Combobox['values'] = Queries.Populate_Remove_Record_CBs()
+
+	def Btn_View_Record(self, record):
+
+		self.View_Records.config(state=NORMAL)
+		self.View_Records.delete('1.0', END)
+
+		self.View_Records.insert(END, Queries.Grab_Records(record.get()))
+
+		self.View_Records.config(state=DISABLED)
+
 	#Add/Remove Item window
 	def Btn_Remove_Item(self, name, type, size):
 		Queries.Remove_Item(name.get(),type.get(),size.get())
@@ -684,24 +694,27 @@ class Application(Tk):
 			Search = Label(self.Center_Frame, text='Search Records by Child Name', font=("Arial",20), pady=5, bg='#f5f1f2')
 			Search.place(relx=.5, rely=.12,anchor= CENTER)
 
+			self.View_Records = Text(self.Center_Frame, font=("Arial",20), bg='#f5f1f2', width=30, height=6)
+			self.View_Records.place(relx=.5, rely=.75,anchor= CENTER)
 
-			Underscore = Label(self.Center_Frame, text=self.Underscore(35),  font=("Arial",15), bg='#f5f1f2')
-			Underscore.place(relx=.35, rely=.4)
+			Separator = Label(self.Center_Frame, text=self.Underscore(35),  font=("Arial",15), bg='#f5f1f2')
+			Separator.place(relx=.35, rely=.4)
 
 			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
 			Copyright.pack(side=BOTTOM)
 
+			#Test for None otherwise Combobox will throw an error
+			AutocompleteBox_values = Queries.Populate_Remove_Record_CBs()
+			if AutocompleteBox_values == None:
+				AutocompleteBox_values = 'None'
 
-			#Create Entry Boxes
-			#TO BE REPLACED WITH ALL CHILDREN NAMES IN THE RECORDS TABLE
-			TEMPORARY_LIST = ['Jordan','Eli','Gavin','Patrick','Behemoth','Kenny','Budders','Santa Claus']
 
-			AutocompleteBox = AutocompleteEntry(self.Center_Frame, font=("Arial",14), completevalues=TEMPORARY_LIST)
-			AutocompleteBox.place(relx=.5, rely=.22,anchor= CENTER)
+			self.AutocompleteBox = AutocompleteEntry(self.Center_Frame, font=("Arial",14), completevalues=AutocompleteBox_values)
+			self.AutocompleteBox.place(relx=.5, rely=.22,anchor= CENTER)
 
 			#Create buttons
-			Search = Button(self.Center_Frame, text="Search", command='', padx=5, pady=5, font=("Arial", 12), bd=3)
-			Search.place(relx=.62, rely=.22,anchor= CENTER)
+			Submit = Button(self.Center_Frame, text="Search", command=lambda: self.Btn_View_Record(self.AutocompleteBox), padx=5, pady=5, font=("Arial", 12), bd=3)
+			Submit.place(relx=.62, rely=.22,anchor= CENTER)
 
 			Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)
 			Exit.bind("<Button-1>", self.Reset_Counter)

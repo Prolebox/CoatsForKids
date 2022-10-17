@@ -308,6 +308,9 @@ def Remove_Record(record):
 		""", (record[0],record[1],record[2]))
 
 	con.close()
+
+def View_Record():
+	pass
 ###################### Queries to update comboboxes #######################
 def Grab_Schools():
 	with sql.connect('CoatsDB') as con:
@@ -344,6 +347,18 @@ def Grab_Item_Sizes(name, type):
 		""" % (item_size, name, item_type), (type,))
 		return cur.fetchall()
 	con.close()
+
+def Grab_Records(record):
+	print(record)
+	# with sql.connect('CoatsDB') as con:
+	# 	cur = con.cursor()
+	# 	cur.execute("""
+	# 		select *
+	# 		from Records
+	# 		where Child_First = (?) and Child_Last = (?) and Record_Id = (?);
+	# 	""" % () )
+	# 	return cur.fetchall()
+	# con.close()
 
 #Used to populate comboboxes on Add Record window
 def Populate_Add_Record_CBs(name):
@@ -392,6 +407,21 @@ def Populate_Add_Record_CBs(name):
 
 #Populate comboboxes on remove record window
 def Populate_Remove_Record_CBs():
+	with sql.connect('CoatsDB') as con:
+		cur = con.cursor()
+		cur.execute("select Child_First, Child_Last, Record_Id from Records;")
+
+		#Take the 3 values and combine them into a list to display
+		listed_values = cur.fetchall()
+		for each in range(len(listed_values)):
+			listed_values[each] = list(listed_values[each])
+			listed_values[each] = str(listed_values[each][0])+' '+str(listed_values[each][1])+' '+str(listed_values[each][2])
+
+		return listed_values
+	con.close()
+
+#Populate combobox for selecing a record to view
+def Populate_View_Record_CBs():
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
 		cur.execute("select Child_First, Child_Last, Record_Id from Records;")
