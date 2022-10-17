@@ -99,14 +99,16 @@ class Application(Tk):
 	def Btn_Remove_Record(self, record):
 		Queries.Remove_Record(record.get())
 		self.Clear_Combobox(record)
-		self.Remove_Record_Combobox['values'] = Queries.Populate_Remove_Record_CBs()
+		self.Remove_Record_Combobox['values'] = Queries.Populate_Record_CName_Id()
 
 	def Btn_View_Record(self, record):
 
 		self.View_Records.config(state=NORMAL)
 		self.View_Records.delete('1.0', END)
 
-		self.View_Records.insert(END, Queries.Grab_Records(record.get()))
+		print(Queries.Grab_Records(record.get()))
+
+		#self.View_Records.insert(END, Queries.Grab_Records(record.get()))
 
 		self.View_Records.config(state=DISABLED)
 
@@ -514,7 +516,7 @@ class Application(Tk):
 			#Create Combobox Widgets
 
 			self.Remove_Record_Combobox = Combobox(self.Center_Frame, state='readonly',font=("Arial",14))
-			self.Remove_Record_Combobox['values'] = Queries.Populate_Remove_Record_CBs()
+			self.Remove_Record_Combobox['values'] = Queries.Populate_Record_CName_Id()
 			#self.Record_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Inventory_Size_Combobox)
 			self.Remove_Record_Combobox.place(relx=.5, rely=.55,anchor= CENTER)
 
@@ -704,7 +706,7 @@ class Application(Tk):
 			Copyright.pack(side=BOTTOM)
 
 			#Test for None otherwise Combobox will throw an error
-			AutocompleteBox_values = Queries.Populate_Remove_Record_CBs()
+			AutocompleteBox_values = Queries.Populate_Record_CName_Id()
 			if AutocompleteBox_values == None:
 				AutocompleteBox_values = 'None'
 
