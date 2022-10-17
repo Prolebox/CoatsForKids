@@ -96,7 +96,10 @@ class Application(Tk):
 		self.Clear_Entry_box(CFirst, CLast, CAge, PFirst, PLast, Phone, Street, City, Zip)
 		self.Clear_Combobox(Gender, School, Hat, Coat, Gloves, Socks, Boots)
 
-
+	def Btn_Remove_Record(self, record):
+		Queries.Remove_Record(record.get())
+		self.Clear_Combobox(record)
+		self.Remove_Record_Combobox['values'] = Queries.Populate_Remove_Record_CBs()
 	#Add/Remove Item window
 	def Btn_Remove_Item(self, name, type, size):
 		Queries.Remove_Item(name.get(),type.get(),size.get())
@@ -500,19 +503,19 @@ class Application(Tk):
 
 			#Create Combobox Widgets
 
-			self.Record_Combobox = Combobox(self.Center_Frame, state='readonly',font=("Arial",14))
-			self.Record_Combobox['values'] = Queries.Populate_Remove_Record_CBs() 
+			self.Remove_Record_Combobox = Combobox(self.Center_Frame, state='readonly',font=("Arial",14))
+			self.Remove_Record_Combobox['values'] = Queries.Populate_Remove_Record_CBs()
 			#self.Record_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Inventory_Size_Combobox)
-			self.Record_Combobox.place(relx=.5, rely=.55,anchor= CENTER)
+			self.Remove_Record_Combobox.place(relx=.5, rely=.55,anchor= CENTER)
 
 
 			#Clear combobox and entry widgets because for some reason the inventory comboboxes are keeping values stored
 			#when window is closed. All other windows besides these clear upon close. I want to clear upon close. I cannot for the life of me
 			#figure out why so I am putting this here out of spite
-			self.Clear_Combobox(self.Record_Combobox)
+			self.Clear_Combobox(self.Remove_Record_Combobox)
 
 			#Create Buttons
-			Submit = Button(self.Center_Frame, text="Submit",font=("Arial",20), command=lambda: self.Btn_Remove_Inventory(self.Remove_Inventory_Combobox, self.Remove_Inventory_Type_Combobox, self.Remove_Inventory_Size_Combobox, self.Remove_Inventory_Amount_Entry), padx=10, pady=10, width=25, bd=3)
+			Submit = Button(self.Center_Frame, text="Submit",font=("Arial",20), command=lambda: self.Btn_Remove_Record(self.Remove_Record_Combobox), padx=10, pady=10, width=25, bd=3)
 			Submit.place(relx=.5, rely=.9,anchor= CENTER, height=55, width=200)
 
 			Exit = Button(self.Bottom_Frame, text="Go Back", font=("Arial",15), command=self.Window.destroy, bd=3)

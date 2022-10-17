@@ -297,9 +297,17 @@ def Add_Record(CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street
 				limit ?;
 			""" % (type_item_names[each]+'_Inventory', type_item_names[each]+'_Type'), (type_items[each], 1))
 
-def Remove_Record():
-	pass
+def Remove_Record(record):
+	record = record.split()
 
+	with sql.connect('CoatsDB') as con:
+		cur = con.cursor()
+		cur.execute("""
+			delete from Records
+			where Child_First = (?) and Child_Last = (?) and Record_Id = (?);
+		""", (record[0],record[1],record[2]))
+
+	con.close()
 ###################### Queries to update comboboxes #######################
 def Grab_Schools():
 	with sql.connect('CoatsDB') as con:
