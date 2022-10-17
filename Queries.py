@@ -299,12 +299,16 @@ def Add_Record(CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street
 def Remove_Record(record):
 	record = record.split()
 
+	Child_First = str(record[0]).rstrip(",")
+	Child_Last = str(record[1]).rstrip(",")
+	Record_Id = str(record[2]).lstrip("#")
+
 	with sql.connect('CoatsDB') as con:
 		cur = con.cursor()
 		cur.execute("""
 			delete from Records
 			where Child_First = (?) and Child_Last = (?) and Record_Id = (?);
-		""", (record[0],record[1],record[2]))
+		""", (Child_First, Child_Last, Record_Id))
 
 	con.close()
 

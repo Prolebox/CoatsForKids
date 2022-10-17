@@ -705,6 +705,7 @@ class Application(Tk):
 			#Create View Record Window
 			self.Configure_Window_Defaults(title='View Record')
 
+
 			#~~~ Add Widets ~~~
 			#Create Labels
 			Title_Image = Label(self.Top_Frame, image=self.Title_Image, font=("Arial",60), pady=5, bg='#f1f5f4')
@@ -727,6 +728,8 @@ class Application(Tk):
 			self.Records_List['values'] = Queries.Populate_Record_CName_Id()
 			self.Records_List.place(relx=.5, rely=.22,anchor= CENTER)
 
+			#Clear combobox so values do not stay populated when window is closed and reopened
+			self.Clear_Combobox(self.Records_List)
 
 			self.View_Child_First = Label(self.Center_Frame, text='Childs First: ', font=("Arial",20), pady=5, bg='#f5f1f2')
 			self.View_Child_First.place(relx=.2, rely=.45,anchor= CENTER)
