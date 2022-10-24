@@ -1,10 +1,11 @@
 #!python3.10
 #Ethan Suhr 2022
-from ttkwidgets.autocomplete import AutocompleteEntry
 from tkinter import *
 from tkinter.ttk import Combobox
 import Tables
 import Queries
+import sys
+import os
 
 #Create the GUI
 class Application(Tk):
@@ -25,6 +26,8 @@ class Application(Tk):
 		for i in range(num):
 			underscore = underscore + '_'
 		return underscore
+
+
 
 	#Add record window
 	def Btn_Submit_Inventory(self, name, type, size='', amount=''):
@@ -74,10 +77,11 @@ class Application(Tk):
 
 	#School menubar window
 	def Btn_Submit_School(self, school):
-		match Queries.Add_School(school.get()):
-			case 'school exists':
+		submit = Queries.Add_School(school.get())
+
+		if submit == 'school exists':
 				self.Notification_Window(text='This School has already been \nadded to the database!')
-			case 'empty':
+		elif submit == 'empty':
 				self.Notification_Window(text='You must enter a school name \nto be added to the database!')
 		self.Clear_Entry_box(school)
 		self.Remove_School_Combobox['values'] = (Queries.Grab_Schools())
@@ -298,6 +302,7 @@ class Application(Tk):
 		self.geometry('1600x900')
 		self.Title_Image = PhotoImage(file='Title.png')
 
+
 		#Counter to limit number of open windows
 		self.counter = 0
 
@@ -334,7 +339,7 @@ class Application(Tk):
 		self.filemenu.add_command(label="Add/Remove Items", command=self.Item_Menubar)
 		self.filemenu.add_command(label="Add/Remove Schools", command=self.Schools_Menubar)
 		self.filemenu.add_separator()
-		self.filemenu.add_command(label='Quit', command=quit)
+		self.filemenu.add_command(label='Quit', command=sys.exit)
 
 
 		#~~~ Add Widets ~~~
@@ -513,7 +518,7 @@ class Application(Tk):
 
 			#Create buttons
 			Select = Button(self.Center_Frame, text="Search", font=("Arial", 14), command=lambda: self.Btn_View_Inventory(self.View_Select_Item_CB.get()), padx=5, pady=5, bd=3)
-			Select.place(relx=.625, rely=.2,anchor= CENTER)
+			Select.place(relx=.65, rely=.2,anchor= CENTER)
 
 			self.Clear_Combobox(self.View_Select_Item_CB)
 
@@ -798,10 +803,10 @@ class Application(Tk):
 			Remove_Item_Size.place(relx=.55, rely=.72,anchor= CENTER, height=55)
 
 			#Create Entry Boxes
-			self.Add_Item_Type_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
+			self.Add_Item_Type_Entry = Entry(self.Center_Frame, font=("Arial",14), width=12)
 			self.Add_Item_Type_Entry.place(relx=.35, rely=.39,anchor= CENTER)
 
-			self.Add_Item_Size_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
+			self.Add_Item_Size_Entry = Entry(self.Center_Frame, font=("Arial",14), width=12)
 			self.Add_Item_Size_Entry.place(relx=.55, rely=.39,anchor= CENTER)
 
 			#Create Comboboxes
