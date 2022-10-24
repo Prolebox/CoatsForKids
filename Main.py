@@ -29,9 +29,12 @@ class Application(Tk):
 	#Add record window
 	def Btn_Submit_Inventory(self, name, type, size='', amount=''):
 
-		if Queries.Add_Inventory_Record(name.get(), type.get(), amount.get(), size.get()) == 'invalid integer':
+		#Must save query to variable, if compaired directly it will run query that many times
+		submit = Queries.Add_Inventory_Record(name.get(), type.get(), amount.get(), size.get())
+
+		if submit == 'invalid integer':
 			self.Notification_Window(text='You must enter a number \nin the amount box!')
-		elif Queries.Add_Inventory_Record(name.get(), type.get(), amount.get(), size.get()) == 'empty':
+		elif submit == 'empty':
 			self.Notification_Window(text='You must enter values in every box!')
 
 
@@ -89,10 +92,15 @@ class Application(Tk):
 	def Btn_Submit_Item(self, name, type, size):
 		#Test to see if the item exists. If so, pop up notification.
 		#If item doesnt exist it will be added
-		if Queries.Add_Item(name.get(),type.get(),size.get()) == 'item exists':
+
+		submit = Queries.Add_Item(name.get(),type.get(),size.get())
+
+
+		if submit == 'item exists':
 			self.Notification_Window(text='This item already exists \nin the database!')
-		elif Queries.Add_Item(name.get(),type.get(),size.get()) == 'empty':
+		elif submit == 'empty':
 			self.Notification_Window(text='Please enter a value \nin every field!')
+
 		self.Clear_Entry_box(type, size)
 
 	#Add Record Window
@@ -119,6 +127,9 @@ class Application(Tk):
 		if results == 'empty':
 			self.Notification_Window(text='You must select a record to search!')
 
+		#convert each value to string to be concatenated below
+		for each in range(len(results)):
+			results[each] = str(results[each])
 
 
 		#Order of results list
@@ -145,7 +156,7 @@ class Application(Tk):
 		self.View_Gloves['text'] = 'Gloves: '+results[13]
 		self.View_Socks['text'] = 'Socks: '+results[14]
 		self.View_Boots['text'] = 'Boots: '+results[15]
-		self.View_Id['text'] = 'Record ID: '+str(results[16])
+		self.View_Id['text'] = 'Record ID: '+results[16]
 
 	#Add/Remove Item window
 	def Btn_Remove_Item(self, name, type, size):
@@ -175,9 +186,9 @@ class Application(Tk):
 			self.Window.resizable(0,0)
 
 			#Divides window into 3 rows
-			self.Top_Frame = Frame(self.Window, bg='#f1f5f4', relief='groove', bd=3)
-			self.Center_Frame = Frame(self.Window, bg='#f5f1f2')
-			self.Bottom_Frame = Frame(self.Window, bg='#f5f1f2')
+			self.Top_Frame = Frame(self.Window, bg='#8bc9f9', relief='groove', bd=3)
+			self.Center_Frame = Frame(self.Window, bg='#c1e2fc')
+			self.Bottom_Frame = Frame(self.Window, bg='#c1e2fc')
 
 			#Configure grid and frames
 			self.Window.grid_rowconfigure(1, weight=1)
@@ -186,6 +197,16 @@ class Application(Tk):
 			self.Top_Frame.grid(row=0, sticky='ew')
 			self.Center_Frame.grid(row=1, sticky='nsew')
 			self.Bottom_Frame.grid(row=3, sticky='ew')
+
+			Title_Image = Label(self.Top_Frame, image=self.Title_Image, font=("Arial",60), pady=5, bg='#8bc9f9')
+			Title_Image.pack(fill=X, pady=12)
+
+			Title_Desc = Label(self.Top_Frame, text=title,  font=("Arial",25), bg='#8bc9f9')
+			Title_Desc.pack(fill=X)
+
+			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#c1e2fc')
+			Copyright.pack(side=BOTTOM)
+
 
 	############################# Bounds Events ############################
 
@@ -281,12 +302,12 @@ class Application(Tk):
 		self.counter = 0
 
 		#Define Frames and configure the grids
-		Top_Frame = Frame(self, height=175, bg='#f1f5f4', relief='groove', bd=3)
+		Top_Frame = Frame(self, height=175, bg='#8bc9f9', relief='groove', bd=3)
 		Center_Frame = Frame(self, bg='#f5f1f2')
-		Bottom_Frame = Frame(self, height=75, bg='#f5f1f2')
+		Bottom_Frame = Frame(self, height=75, bg='#c1e2fc')
 
-		Center_Left_Frame = Frame(Center_Frame, bg='#f5f1f2')
-		Center_Right_Frame = Frame(Center_Frame, bg='#f5f1f2')
+		Center_Left_Frame = Frame(Center_Frame, bg='#c1e2fc')
+		Center_Right_Frame = Frame(Center_Frame, bg='#c1e2fc')
 
 		#Configure grid and frames
 		self.grid_rowconfigure(1, weight=1)
@@ -310,34 +331,34 @@ class Application(Tk):
 		#Menubar title
 		self.menubar.add_cascade(label='Database', menu=self.filemenu)
 		#Menubar option
-		self.filemenu.add_command(label="Add/Remove Item", command=self.Item_Menubar)
-		self.filemenu.add_command(label="Schools", command=self.Schools_Menubar)
+		self.filemenu.add_command(label="Add/Remove Items", command=self.Item_Menubar)
+		self.filemenu.add_command(label="Add/Remove Schools", command=self.Schools_Menubar)
 		self.filemenu.add_separator()
 		self.filemenu.add_command(label='Quit', command=quit)
 
 
 		#~~~ Add Widets ~~~
 		#Create Labels
-		Title_Image = Label(Top_Frame, image=self.Title_Image, font=("Arial",60), pady=5, bg='#f1f5f4')
+		Title_Image = Label(Top_Frame, image=self.Title_Image, font=("Arial",60), pady=5, bg='#8bc9f9')
 		Title_Image.pack(fill=X, pady=12)
 
-		Title_Description = Label(Top_Frame, text='Inventory & Record Tracker',  font=("Arial",20), bg='#f1f5f4')
+		Title_Description = Label(Top_Frame, text='Inventory & Record Tracker',  font=("Arial",20), bg='#8bc9f9')
 		Title_Description.pack(fill=X)
 
-		Copyright = Label(Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
+		Copyright = Label(Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#c1e2fc')
 		Copyright.pack(side=BOTTOM)
 
-		Inventory = Label(Center_Left_Frame, text='Inventory', font=("Arial",50), bg='#f5f1f2')
+		Inventory = Label(Center_Left_Frame, text='Inventory', font=("Arial",50), bg='#c1e2fc')
 		Inventory.place(relx=.5, rely=.3,anchor= CENTER)
 
-		Inventory_Underscore = Label(Center_Left_Frame, text=self.Underscore(35), font=("Arial",15), bg='#f5f1f2')
+		Inventory_Underscore = Label(Center_Left_Frame, text=self.Underscore(35), font=("Arial",15), bg='#c1e2fc')
 		Inventory_Underscore.place(relx=.5, rely=.38,anchor= CENTER)
 
-		Child = Label(Center_Right_Frame, text='Records', font=("Arial",50), bg='#f5f1f2')
-		Child.place(relx=.5, rely=.3, anchor=CENTER)
+		Records = Label(Center_Right_Frame, text='Records', font=("Arial",50), bg='#c1e2fc')
+		Records.place(relx=.5, rely=.3, anchor=CENTER)
 
-		Child_Underscore = Label(Center_Right_Frame, text=self.Underscore(35), font=("Arial",15), bg='#f5f1f2')
-		Child_Underscore.place(relx=.5, rely=.38,anchor= CENTER)
+		Records_Underscore = Label(Center_Right_Frame, text=self.Underscore(35), font=("Arial",15), bg='#c1e2fc')
+		Records_Underscore.place(relx=.5, rely=.38,anchor= CENTER)
 
 		#Create buttons
 		Add_Inventory = Button(Center_Left_Frame, text="Add Inventory", command=self.Add_Inventory_Window, font=("Arial",20), bd=3)
@@ -367,26 +388,17 @@ class Application(Tk):
 
 			#~~~ Add Widets ~~~
 			#Create Labels
-			Title_Image = Label(self.Top_Frame, image=self.Title_Image, font=("Arial",60), pady=5, bg='#f1f5f4')
-			Title_Image.pack(fill=X, pady=12)
-
-			Title_Desc = Label(self.Top_Frame, text='Remove Inventory',  font=("Arial",25), bg='#f1f5f4')
-			Title_Desc.pack(fill=X)
-
-			Item_Name = Label(self.Center_Frame, text='Item Name:', font=("Arial",23), pady=5, bg='#f5f1f2')
+			Item_Name = Label(self.Center_Frame, text='Item Name:', font=("Arial",23), pady=5, bg='#c1e2fc')
 			Item_Name.place(relx=.42, rely=.22,anchor= CENTER, height=55, width=200)
 
-			Item_Type = Label(self.Center_Frame, text='Item Type:', font=("Arial",23), pady=5, bg='#f5f1f2')
+			Item_Type = Label(self.Center_Frame, text='Item Type:', font=("Arial",23), pady=5, bg='#c1e2fc')
 			Item_Type.place(relx=.42, rely=.4,anchor= CENTER, height=55, width=200)
 
-			Item_Size = Label(self.Center_Frame, text='Item Size:', font=("Arial",23), pady=5, bg='#f5f1f2')
+			Item_Size = Label(self.Center_Frame, text='Item Size:', font=("Arial",23), pady=5, bg='#c1e2fc')
 			Item_Size.place(relx=.42, rely=.58,anchor= CENTER, height=55, width=200)
 
-			Item_Amount = Label(self.Center_Frame, text='Amount:', font=("Arial",22), pady=5, bg='#f5f1f2')
+			Item_Amount = Label(self.Center_Frame, text='Amount:', font=("Arial",22), pady=5, bg='#c1e2fc')
 			Item_Amount.place(relx=.42, rely=.74,anchor= CENTER, height=55, width=200)
-
-			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
-			Copyright.pack(side=BOTTOM)
 
 			#Create Combobox Widgets
 			self.Remove_Inventory_Combobox = Combobox(self.Center_Frame, state='readonly',font=("Arial",14))
@@ -427,26 +439,17 @@ class Application(Tk):
 
 			#~~~ Add Widets ~~~
 			#Create Labels
-			Title_Image = Label(self.Top_Frame, image=self.Title_Image, font=("Arial",60), pady=5, bg='#f1f5f4')
-			Title_Image.pack(fill=X, pady=12)
-
-			Title_Desc = Label(self.Top_Frame, text='Add Inventory',  font=("Arial",25), bg='#f1f5f4')
-			Title_Desc.pack(fill=X)
-
-			Item_Name = Label(self.Center_Frame, text='Item Name:', font=("Arial",23), pady=5, bg='#f5f1f2')
+			Item_Name = Label(self.Center_Frame, text='Item Name:', font=("Arial",23), pady=5, bg='#c1e2fc')
 			Item_Name.place(relx=.42, rely=.22,anchor= CENTER, height=55, width=200)
 
-			Item_Type = Label(self.Center_Frame, text='Item Type:', font=("Arial",23), pady=5, bg='#f5f1f2')
+			Item_Type = Label(self.Center_Frame, text='Item Type:', font=("Arial",23), pady=5, bg='#c1e2fc')
 			Item_Type.place(relx=.42, rely=.4,anchor= CENTER, height=55, width=200)
 
-			Item_Size = Label(self.Center_Frame, text='Item Size:', font=("Arial",23), pady=5, bg='#f5f1f2')
+			Item_Size = Label(self.Center_Frame, text='Item Size:', font=("Arial",23), pady=5, bg='#c1e2fc')
 			Item_Size.place(relx=.42, rely=.58,anchor= CENTER, height=55, width=200)
 
-			Item_Amount = Label(self.Center_Frame, text='Amount:', font=("Arial",22), pady=5, bg='#f5f1f2')
+			Item_Amount = Label(self.Center_Frame, text='Amount:', font=("Arial",22), pady=5, bg='#c1e2fc')
 			Item_Amount.place(relx=.42, rely=.74,anchor= CENTER, height=55, width=200)
-
-			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
-			Copyright.pack(side=BOTTOM)
 
 			#Create Combobox Widgets
 			self.Add_Inventory_Combobox = Combobox(self.Center_Frame, text='Select an item', state='readonly',font=("Arial",14))
@@ -488,29 +491,20 @@ class Application(Tk):
 
 			#~~~ Add Widets ~~~
 			#Create Labels
-			Title_Image = Label(self.Top_Frame, image=self.Title_Image, font=("Arial",60), pady=5, bg='#f1f5f4')
-			Title_Image.pack(fill=X, pady=12)
-
-			Title_Desc = Label(self.Top_Frame, text='View Inventory',  font=("Arial",20), bg='#f1f5f4')
-			Title_Desc.pack(fill=X)
-
-			Search_Item = Label(self.Center_Frame, text='Search Item', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Search_Item = Label(self.Center_Frame, text='Search Item', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Search_Item.place(relx=.5, rely=.12,anchor= CENTER)
 
-			self.View_Item_Selected = Label(self.Center_Frame, text='', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Item_Selected = Label(self.Center_Frame, text='', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Item_Selected.place(relx=.42, rely=.36, anchor= CENTER)
 
-			self.View_Total = Label(self.Center_Frame, text='', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Total = Label(self.Center_Frame, text='', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Total.place(relx=.585, rely=.36,anchor= CENTER)
 
 			self.View_Subitems = Text(self.Center_Frame, font=("Arial",20), bg='#f5f1f2', width=30, height=6)
 			self.View_Subitems.place(relx=.5, rely=.75,anchor= CENTER)
 
-			Separator = Label(self.Center_Frame, text=self.Underscore(35),  font=("Arial",15), bg='#f5f1f2')
+			Separator = Label(self.Center_Frame, text=self.Underscore(35),  font=("Arial",15), bg='#c1e2fc')
 			Separator.place(relx=.35, rely=.4)
-
-			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
-			Copyright.pack(side=BOTTOM)
 
 			#Create Entry Boxes
 			self.View_Select_Item_CB = Combobox(self.Center_Frame, text='Inventory Item', state='readonly', font=("Arial",14))
@@ -537,20 +531,10 @@ class Application(Tk):
 
 			#~~~ Add Widets ~~~
 			#Create Labels
-			Title_Image = Label(self.Top_Frame, image=self.Title_Image, font=("Arial",60), pady=5, bg='#f1f5f4')
-			Title_Image.pack(fill=X, pady=12)
-
-			Title_Desc = Label(self.Top_Frame, text='Remove Inventory',  font=("Arial",25), bg='#f1f5f4')
-			Title_Desc.pack(fill=X)
-
-			Record = Label(self.Center_Frame, text='Select a record to delete', font=("Arial",23), pady=5, bg='#f5f1f2')
+			Record = Label(self.Center_Frame, text='Select a record to delete', font=("Arial",23), pady=5, bg='#c1e2fc')
 			Record.place(relx=.5, rely=.4,anchor= CENTER, height=55)
 
-			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
-			Copyright.pack(side=BOTTOM)
-
 			#Create Combobox Widgets
-
 			self.Remove_Record_Combobox = Combobox(self.Center_Frame, state='readonly',font=("Arial",14))
 			self.Remove_Record_Combobox['values'] = Queries.Populate_Record_CName_Id()
 			#self.Record_Combobox.bind("<<ComboboxSelected>>", self.Update_Remove_Inventory_Size_Combobox)
@@ -578,65 +562,54 @@ class Application(Tk):
 
 			#~~~ Add Widets ~~~
 			#Create Labels
-			Title_Image = Label(self.Top_Frame, image=self.Title_Image, font=("Arial",60), pady=5, bg='#f1f5f4')
-			Title_Image.pack(fill=X, pady=12)
-
-			Title_Description = Label(self.Top_Frame, text='Add Record',  font=("Arial",20), bg='#f1f5f4')
-			Title_Description.pack(fill=X)
-
-			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
-			Copyright.pack(side=BOTTOM)
-
-
-			#Child Labels
-			Child_First_Name = Label(self.Center_Frame, text='Child First', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Child_First_Name = Label(self.Center_Frame, text='Child First', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Child_First_Name.place(relx=.24, rely=.12,anchor= CENTER)
 
-			Child_Last_Name = Label(self.Center_Frame, text='Child Last', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Child_Last_Name = Label(self.Center_Frame, text='Child Last', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Child_Last_Name.place(relx=.42, rely=.12,anchor= CENTER)
 
-			Child_Age = Label(self.Center_Frame, text='Age', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Child_Age = Label(self.Center_Frame, text='Age', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Child_Age.place(relx=.55, rely=.12,anchor= CENTER)
 
-			Child_Gender = Label(self.Center_Frame, text='Gender', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Child_Gender = Label(self.Center_Frame, text='Gender', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Child_Gender.place(relx=.63, rely=.12,anchor= CENTER)
 
-			Child_School = Label(self.Center_Frame, text='School', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Child_School = Label(self.Center_Frame, text='School', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Child_School.place(relx=.72, rely=.12,anchor= CENTER)
 
 			#Parent Labels
-			Parent_First_Name = Label(self.Center_Frame, text='Parent First', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Parent_First_Name = Label(self.Center_Frame, text='Parent First', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Parent_First_Name.place(relx=.14, rely=.32,anchor= CENTER)
 
-			Parent_Last_Name = Label(self.Center_Frame, text='Parent Last', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Parent_Last_Name = Label(self.Center_Frame, text='Parent Last', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Parent_Last_Name.place(relx=.31, rely=.32,anchor= CENTER)
 
-			Parent_Phone = Label(self.Center_Frame, text='Phone', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Parent_Phone = Label(self.Center_Frame, text='Phone', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Parent_Phone.place(relx=.48, rely=.32,anchor= CENTER)
 
-			Street = Label(self.Center_Frame, text='Street', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Street = Label(self.Center_Frame, text='Street', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Street.place(relx=.65, rely=.32,anchor= CENTER)
 
-			City = Label(self.Center_Frame, text='City', font=("Arial",20), pady=5, bg='#f5f1f2')
+			City = Label(self.Center_Frame, text='City', font=("Arial",20), pady=5, bg='#c1e2fc')
 			City.place(relx=.8, rely=.32,anchor= CENTER)
 
-			Zip = Label(self.Center_Frame, text='Zip', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Zip = Label(self.Center_Frame, text='Zip', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Zip.place(relx=.9, rely=.32,anchor= CENTER)
 
 			#Item Labels
-			Hat = Label(self.Center_Frame, text='Hat', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Hat = Label(self.Center_Frame, text='Hat', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Hat.place(relx=.33, rely=.54,anchor= CENTER)
 
-			Coat = Label(self.Center_Frame, text='Coat', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Coat = Label(self.Center_Frame, text='Coat', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Coat.place(relx=.50, rely=.54,anchor= CENTER)
 
-			Gloves = Label(self.Center_Frame, text='Gloves', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Gloves = Label(self.Center_Frame, text='Gloves', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Gloves.place(relx=.66, rely=.54,anchor= CENTER)
 
-			Socks = Label(self.Center_Frame, text='Socks', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Socks = Label(self.Center_Frame, text='Socks', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Socks.place(relx=.4, rely=.74,anchor= CENTER)
 
-			Boots = Label(self.Center_Frame, text='Boots', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Boots = Label(self.Center_Frame, text='Boots', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Boots.place(relx=.6, rely=.74,anchor= CENTER)
 
 			#Create Entry Widgets
@@ -724,21 +697,11 @@ class Application(Tk):
 
 			#~~~ Add Widets ~~~
 			#Create Labels
-			Title_Image = Label(self.Top_Frame, image=self.Title_Image, font=("Arial",60), pady=5, bg='#f1f5f4')
-			Title_Image.pack(fill=X, pady=12)
-
-			Title_Description = Label(self.Top_Frame, text='View Inventory',  font=("Arial",20), bg='#f1f5f4')
-			Title_Description.pack(fill=X)
-
-			Search = Label(self.Center_Frame, text='Search records by child name', font=("Arial",20), pady=5, bg='#f5f1f2')
+			Search = Label(self.Center_Frame, text='Search records by child name', font=("Arial",20), pady=5, bg='#c1e2fc')
 			Search.place(relx=.5, rely=.12,anchor= CENTER)
 
-			Separator = Label(self.Center_Frame, text=self.Underscore(35),  font=("Arial",15), bg='#f5f1f2')
+			Separator = Label(self.Center_Frame, text=self.Underscore(35),  font=("Arial",15), bg='#c1e2fc')
 			Separator.place(relx=.35, rely=.3)
-
-			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
-			Copyright.pack(side=BOTTOM)
-
 
 			self.Records_List = Combobox(self.Center_Frame, text='Select Gloves', state='readonly')
 			self.Records_List['values'] = Queries.Populate_Record_CName_Id()
@@ -747,55 +710,55 @@ class Application(Tk):
 			#Clear combobox so values do not stay populated when window is closed and reopened
 			self.Clear_Combobox(self.Records_List)
 
-			self.View_Child_First = Label(self.Center_Frame, text='Childs First: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Child_First = Label(self.Center_Frame, text='Childs First: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Child_First.place(relx=.2, rely=.45,anchor= CENTER)
 
-			self.View_Child_Last = Label(self.Center_Frame, text='Childs Last: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Child_Last = Label(self.Center_Frame, text='Childs Last: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Child_Last.place(relx=.2, rely=.55,anchor= CENTER)
 
-			self.View_Child_Age = Label(self.Center_Frame, text='Childs Age: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Child_Age = Label(self.Center_Frame, text='Childs Age: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Child_Age.place(relx=.2, rely=.65,anchor= CENTER)
 
-			self.View_Child_Gender = Label(self.Center_Frame, text='Childs Gender: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Child_Gender = Label(self.Center_Frame, text='Childs Gender: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Child_Gender.place(relx=.2, rely=.75,anchor= CENTER)
 
-			self.View_Child_School = Label(self.Center_Frame, text='Childs Schools: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Child_School = Label(self.Center_Frame, text='Childs Schools: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Child_School.place(relx=.2, rely=.85,anchor= CENTER)
 
-			self.View_Parent_First = Label(self.Center_Frame, text='Parents First: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Parent_First = Label(self.Center_Frame, text='Parents First: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Parent_First.place(relx=.5, rely=.45,anchor= CENTER)
 
-			self.View_Parent_Last = Label(self.Center_Frame, text='Parents Last: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Parent_Last = Label(self.Center_Frame, text='Parents Last: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Parent_Last.place(relx=.5, rely=.55,anchor= CENTER)
 
-			self.View_Parent_Phone = Label(self.Center_Frame, text='Parents Phone: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Parent_Phone = Label(self.Center_Frame, text='Parents Phone: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Parent_Phone.place(relx=.5, rely=.65,anchor= CENTER)
 
-			self.View_Parent_Street = Label(self.Center_Frame, text='Parents Street: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Parent_Street = Label(self.Center_Frame, text='Parents Street: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Parent_Street.place(relx=.5, rely=.75,anchor= CENTER)
 
-			self.View_Parent_City = Label(self.Center_Frame, text='Parents City: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Parent_City = Label(self.Center_Frame, text='Parents City: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Parent_City.place(relx=.5, rely=.85,anchor= CENTER)
 
-			self.View_Parent_Zip = Label(self.Center_Frame, text='Parents Zip: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Parent_Zip = Label(self.Center_Frame, text='Parents Zip: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Parent_Zip.place(relx=.5, rely=.95,anchor= CENTER)
 
-			self.View_Hat = Label(self.Center_Frame, text='Hat: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Hat = Label(self.Center_Frame, text='Hat: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Hat.place(relx=.8, rely=.45,anchor= CENTER)
 
-			self.View_Coat = Label(self.Center_Frame, text='Coat: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Coat = Label(self.Center_Frame, text='Coat: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Coat.place(relx=.8, rely=.55,anchor= CENTER)
 
-			self.View_Gloves = Label(self.Center_Frame, text='Gloves: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Gloves = Label(self.Center_Frame, text='Gloves: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Gloves.place(relx=.8, rely=.65,anchor= CENTER)
 
-			self.View_Socks = Label(self.Center_Frame, text='Socks: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Socks = Label(self.Center_Frame, text='Socks: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Socks.place(relx=.8, rely=.75,anchor= CENTER)
 
-			self.View_Boots = Label(self.Center_Frame, text='Boots: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Boots = Label(self.Center_Frame, text='Boots: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Boots.place(relx=.8, rely=.85,anchor= CENTER)
 
-			self.View_Id = Label(self.Center_Frame, text='Record ID: ', font=("Arial",20), pady=5, bg='#f5f1f2')
+			self.View_Id = Label(self.Center_Frame, text='Record ID: ', font=("Arial",20), pady=5, bg='#c1e2fc')
 			self.View_Id.place(relx=.8, rely=.95,anchor= CENTER)
 
 			#Create buttons
@@ -815,39 +778,24 @@ class Application(Tk):
 
 			#~~~ Add Widets ~~~
 			#Add Items Labels
-			Add_Item = Label(self.Center_Frame, text='Add an Item to the database', font=("Arial",23), pady=5, bg='#f5f1f2')
+			Add_Item = Label(self.Center_Frame, text='Add an Item to the database', font=("Arial",23), pady=5, bg='#c1e2fc')
 			Add_Item.place(relx=.5, rely=.16,anchor= CENTER, height=55)
 
-			Add_Item_Underscore = Label(self.Center_Frame, text=self.Underscore(35), font=("Arial",15), bg='#f5f1f2')
-			Add_Item_Underscore.place(relx=.5, rely=.22,anchor= CENTER)
-
-			Add_Item_Name = Label(self.Center_Frame, text='Name', font=("Arial",18), pady=5, bg='#f5f1f2')
-			Add_Item_Name.place(relx=.15, rely=.32,anchor= CENTER, height=55)
-
-			Add_Item_Type = Label(self.Center_Frame, text='Type', font=("Arial",18), pady=5, bg='#f5f1f2')
+			Add_Item_Type = Label(self.Center_Frame, text='Type', font=("Arial",18), pady=5, bg='#c1e2fc')
 			Add_Item_Type.place(relx=.35, rely=.32,anchor= CENTER, height=55)
 
-			Add_Item_Size = Label(self.Center_Frame, text='Size', font=("Arial",18), pady=5, bg='#f5f1f2')
+			Add_Item_Size = Label(self.Center_Frame, text='Size', font=("Arial",18), pady=5, bg='#c1e2fc')
 			Add_Item_Size.place(relx=.55, rely=.32,anchor= CENTER, height=55)
 
 			#Remove Item Labels
-			Remove_Item = Label(self.Center_Frame, text='Remove an Item from the database', font=("Arial",23), pady=5, bg='#f5f1f2')
+			Remove_Item = Label(self.Center_Frame, text='Remove an Item from the database', font=("Arial",23), pady=5, bg='#c1e2fc')
 			Remove_Item.place(relx=.5, rely=.56,anchor= CENTER, height=55)
 
-			Remove_Item_Underscore = Label(self.Center_Frame, text=self.Underscore(35), font=("Arial",15), bg='#f5f1f2')
-			Remove_Item_Underscore.place(relx=.5, rely=.62,anchor= CENTER)
-
-			Remove_Item_Name = Label(self.Center_Frame, text='Name', font=("Arial",18), pady=5, bg='#f5f1f2')
-			Remove_Item_Name.place(relx=.15, rely=.72,anchor= CENTER, height=55)
-
-			Remove_Item_Type = Label(self.Center_Frame, text='Type', font=("Arial",18), pady=5, bg='#f5f1f2')
+			Remove_Item_Type = Label(self.Center_Frame, text='Type', font=("Arial",18), pady=5, bg='#c1e2fc')
 			Remove_Item_Type.place(relx=.35, rely=.72,anchor= CENTER, height=55)
 
-			Remove_Item_Size = Label(self.Center_Frame, text='Size', font=("Arial",18), pady=5, bg='#f5f1f2')
+			Remove_Item_Size = Label(self.Center_Frame, text='Size', font=("Arial",18), pady=5, bg='#c1e2fc')
 			Remove_Item_Size.place(relx=.55, rely=.72,anchor= CENTER, height=55)
-
-			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
-			Copyright.pack(side=BOTTOM)
 
 			#Create Entry Boxes
 			self.Add_Item_Type_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
@@ -896,26 +844,17 @@ class Application(Tk):
 
 			#~~~ Add Widets ~~~
 			#Create Labels
-			Add_School = Label(self.Center_Frame, text='Add a School to the database', font=("Arial",23), pady=5, bg='#f5f1f2')
+			Add_School = Label(self.Center_Frame, text='Add a School to the database', font=("Arial",23), pady=5, bg='#c1e2fc')
 			Add_School.place(relx=.5, rely=.16,anchor= CENTER, height=55)
 
-			Add_School_Underscore = Label(self.Center_Frame, text=self.Underscore(35), font=("Arial",15), bg='#f5f1f2')
-			Add_School_Underscore.place(relx=.5, rely=.22,anchor= CENTER)
-
-			Add_School_Name = Label(self.Center_Frame, text='Name', font=("Arial",18), pady=5, bg='#f5f1f2')
+			Add_School_Name = Label(self.Center_Frame, text='Name', font=("Arial",18), pady=5, bg='#c1e2fc')
 			Add_School_Name.place(relx=.5, rely=.32,anchor= CENTER, height=55)
 
-			Remove_School = Label(self.Center_Frame, text='Remove a School from the database', font=("Arial",23), pady=5, bg='#f5f1f2')
+			Remove_School = Label(self.Center_Frame, text='Remove a School from the database', font=("Arial",23), pady=5, bg='#c1e2fc')
 			Remove_School.place(relx=.5, rely=.56,anchor= CENTER, height=55)
 
-			Remove_School_Underscore = Label(self.Center_Frame, text=self.Underscore(35), font=("Arial",15), bg='#f5f1f2')
-			Remove_School_Underscore.place(relx=.5, rely=.62,anchor= CENTER)
-
-			Remove_School_Name = Label(self.Center_Frame, text='Name', font=("Arial",18), pady=5, bg='#f5f1f2')
+			Remove_School_Name = Label(self.Center_Frame, text='Name', font=("Arial",18), pady=5, bg='#c1e2fc')
 			Remove_School_Name.place(relx=.5, rely=.72,anchor= CENTER, height=55)
-
-			Copyright = Label(self.Bottom_Frame, text='Copyright Coats for Kids 2022', font=("Arial",10), bg='#f5f1f2')
-			Copyright.pack(side=BOTTOM)
 
 			#Create Entry Boxes
 			self.Add_School_Entry = Entry(self.Center_Frame, font=("Arial",14), width=15)
@@ -939,11 +878,28 @@ class Application(Tk):
 
 	##### POP-UP WINDOWS #####
 	def Notification_Window(self, text):
-		self.Configure_Window_Defaults(title='Notification', geometry='640x200')
+		self.Window = Toplevel(self)
+		self.Window.title('Notification')
+		self.Window.geometry('640x200')
+		#Disallows resizing the window
+		self.Window.resizable(0,0)
+
+		#Divides window into 3 rows
+		self.Top_Frame = Frame(self.Window, bg='#8bc9f9', relief='groove', bd=3)
+		self.Center_Frame = Frame(self.Window, bg='#c1e2fc')
+		self.Bottom_Frame = Frame(self.Window, bg='#c1e2fc')
+
+		#Configure grid and frames
+		self.Window.grid_rowconfigure(1, weight=1)
+		self.Window.grid_columnconfigure(0, weight=1)
+
+		self.Top_Frame.grid(row=0, sticky='ew')
+		self.Center_Frame.grid(row=1, sticky='nsew')
+		self.Bottom_Frame.grid(row=3, sticky='ew')
 
 		#~~~ Add Widets ~~~
 		#Create Labels
-		Main_Label = Label(self.Center_Frame, text=text, font=("Arial",18), pady=5, bg='#f5f1f2')
+		Main_Label = Label(self.Center_Frame, text=text, font=("Arial",18), pady=5, bg='#c1e2fc')
 		Main_Label.place(relx=.5, rely=.5,anchor= CENTER, height=55)
 
 		#Create Buttons
