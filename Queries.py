@@ -104,21 +104,18 @@ def Add_Inventory_Record(name, type, amount, size=''):
 	item_size = name+'_Size'
 	table_name = name+'_Inventory'
 	i = 0
-	print('function start')
+
 
 	try:
 		if name in ['Boots','Coats','Gloves']:
 			with sql.connect('CoatsDB') as con:
 				cur = con.cursor()
 				while(i < int(amount)):
-					print(i, amount)
 					i += 1
-					print(i, amount)
 					cur.execute("""
 						insert into %s (%s, %s)
 						values (?,?);
 					""" % (table_name, item_type, item_size), (type, size))
-					print('executed')
 			con.close()
 
 		elif name in ['Socks','Hats'] and type != '':
