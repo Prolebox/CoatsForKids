@@ -158,6 +158,11 @@ def Remove_Item(name, type='', size=''):
 		con.close()
 
 def Add_Item(name, type='', size=''):
+
+	#Remove white spaces
+	type = "".join(type.split())
+	size = "".join(type.split())
+
 	item_type = name+'_Type'
 	item_size = name+'_Size'
 	#Check which item is being added and set variables for the sql query
@@ -224,6 +229,16 @@ def Add_Record(CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street
 	##### Add Record to Database #####
 	#Combine entry boxes to test for empty values
 	required_info = (CFirst, CLast, CAge, Gender, School, PFirst, PLast, Phone, Street, City, Zip)
+
+	#remove white spaces
+	CFirst = "".join(CFirst.split())
+	CLast = "".join(CFirst.split())
+	PFirst = "".join(CFirst.split())
+	PLast = "".join(CFirst.split())
+	City = "".join(CFirst.split())
+	Phone = "".join(CFirst.split())
+
+	
 
     #Return empty to display notification window if required info missing
 	if '' in required_info:
